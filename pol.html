@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>VaultLine - بوليغون</title>
 
-    <!-- CDN Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js">
@@ -14,7 +13,7 @@
     </script>
 
     <style>
-        /* جميع الأنماط كما هي - لم تتغير */
+        /* نفس الأنماط السابقة - غيرت شيئاً */
         * {
             margin: 0;
             padding: 0;
@@ -1070,7 +1069,7 @@
         // =====================================================================
         //  CONFIG
         // =====================================================================
-        const SUPABASE_URL = 'https://your-project.supabase.co'; // <-- استبدل برابط مشروعك
+        const SUPABASE_URL = 'https://your-project.supabase.co'; // <-- استبدل
         const SUPABASE_ANON_KEY = 'sb_publishable_9cQ59wQ3cK6K6bjrLVHxCw_DWuu4uZl';
         const POLYGON_RPC = 'https://polygon-rpc.com';
         const ADMIN_EMAIL = 'youcanuseoneold@gmail.com';
@@ -1090,7 +1089,7 @@
         const MSG_COOLDOWN = 5000;
 
         // =====================================================================
-        //  SUPABASE CLIENT - تم تغيير الاسم إلى supabaseClient
+        //  SUPABASE CLIENT
         // =====================================================================
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -2200,18 +2199,21 @@
             }
         });
 
+        // =====================================================================
+        //  DRAW WHEEL (تم إصلاح الخطأ)
+        // =====================================================================
         function drawWheel() {
             const canvas = wheelCanvas;
             const ctx = canvas.getContext('2d');
             const rect = canvas.parentElement.getBoundingClientRect();
-            const size = Math.min(rect.width, rect.height, 340);
+            // تحديد الحجم مع حد أدنى 200 بكسل لتجنب القيم السالبة
+            let size = Math.min(rect.width, rect.height, 340);
+            if (size < 20) size = 200; // قيمة افتراضية
             canvas.width = size;
             canvas.height = size;
             const cx = size / 2;
             const cy = size / 2;
-            const r = size / 2 - 8;
-            const segments = FRUITS.length;
-            const angleStep = (2 * Math.PI) / segments;
+            const r = Math.max(10, size / 2 - 8); // نضمن أن r >= 10
 
             ctx.clearRect(0, 0, size, size);
             const colors = ['#e74c3c', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#e67e22'];
@@ -2220,13 +2222,13 @@
             if (gameState.result) {
                 const idx = FRUITS.findIndex(f => f.id === gameState.result);
                 if (idx !== -1) {
-                    startAngle = -idx * angleStep - angleStep / 2;
+                    startAngle = -idx * (2 * Math.PI / FRUITS.length) - (2 * Math.PI / FRUITS.length) / 2;
                 }
             }
 
-            for (let i = 0; i < segments; i++) {
-                const angle = startAngle + i * angleStep;
-                const nextAngle = angle + angleStep;
+            for (let i = 0; i < FRUITS.length; i++) {
+                const angle = startAngle + i * (2 * Math.PI / FRUITS.length);
+                const nextAngle = angle + (2 * Math.PI / FRUITS.length);
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
                 ctx.arc(cx, cy, r, angle, nextAngle);
@@ -2237,7 +2239,7 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                const midAngle = angle + angleStep / 2;
+                const midAngle = angle + (2 * Math.PI / FRUITS.length) / 2;
                 const tx = cx + r * 0.65 * Math.cos(midAngle);
                 const ty = cy + r * 0.65 * Math.sin(midAngle);
                 ctx.fillStyle = '#fff';
@@ -2248,6 +2250,7 @@
                 ctx.shadowBlur = 6;
                 ctx.fillText(FRUITS[i].emoji, tx, ty);
                 ctx.shadowBlur = 0;
+
                 const lx = cx + r * 0.88 * Math.cos(midAngle);
                 const ly = cy + r * 0.88 * Math.sin(midAngle);
                 ctx.fillStyle = '#fff';
@@ -2272,6 +2275,9 @@
             ctx.stroke();
         }
 
+        // =====================================================================
+        //  RESIZE OBSERVER للعجلة
+        // =====================================================================
         const ro = new ResizeObserver(() => drawWheel());
         const wheelWrapper = document.querySelector('.wheel-wrapper');
         if (wheelWrapper) ro.observe(wheelWrapper);
