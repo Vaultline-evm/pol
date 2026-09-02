@@ -2,10 +2,10 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>VaultLine - بوليغون</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaultLine - المحادثات والعجلة</title>
 
-    <!-- CDN Libraries -->
+    <!-- ====== CDN ====== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js">
@@ -14,792 +14,2439 @@
     </script>
 
     <style>
-        /* نفس الأنماط السابقة - محذوفة للاختصار، لكن يمكنك إضافتها كاملة */
+        /* ----- reset & base ----- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        :root {
-            --bg: #0b0e17;
-            --card: #141a2b;
-            --border: #2a3a5c;
-            --primary: #6c5ce7;
-            --primary-glow: #6c5ce766;
-            --accent: #00d4ff;
-            --green: #00b894;
-            --red: #e17055;
-            --gold: #fdcb6e;
-            --text: #dfe6e9;
-            --text-dim: #7f8fa6;
-            --radius: 16px;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
         }
         body {
-            background: var(--bg);
-            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0b0e14;
+            color: #e8edf5;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 8px;
+            padding: 12px;
         }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1f2a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3a4a6a;
+            border-radius: 8px;
+        }
+
+        /* ----- container ----- */
         #app {
+            max-width: 960px;
             width: 100%;
-            max-width: 480px;
-            height: 100vh;
-            max-height: 860px;
-            background: var(--card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            background: #121820;
+            border-radius: 28px;
+            padding: 20px 22px 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            border: 1px solid #2a3344;
             position: relative;
-            border: 1px solid var(--border);
         }
-        /* باقي الأنماط ... (اختصاراً، لكن الكود الكامل موجود في الرد السابق) */
-        .auth-screen {
+
+        /* ----- auth screen ----- */
+        #authScreen {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 32px 24px;
-            flex: 1;
-            gap: 20px;
+            padding: 30px 10px 20px;
         }
-        .auth-screen .logo {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+        #authScreen .logo {
+            font-size: 38px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #b388ff, #82b1ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
+            margin-bottom: 10px;
         }
-        .auth-screen .sub {
-            color: var(--text-dim);
-            font-size: 14px;
-            margin-top: -8px;
+        #authScreen .sub {
+            color: #8a9bb5;
+            font-size: 15px;
+            margin-bottom: 28px;
         }
         .auth-box {
+            background: #1a212c;
+            padding: 28px 30px;
+            border-radius: 20px;
             width: 100%;
-            max-width: 340px;
-            background: var(--bg);
-            border-radius: var(--radius);
-            padding: 24px 20px;
-            border: 1px solid var(--border);
-        }
-        .auth-box h3 {
-            text-align: center;
-            margin-bottom: 18px;
-            font-weight: 600;
-            font-size: 18px;
+            max-width: 400px;
+            border: 1px solid #2e3a4e;
         }
         .auth-box input {
             width: 100%;
-            padding: 12px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--card);
-            color: var(--text);
-            font-size: 14px;
-            margin-bottom: 12px;
-            outline: none;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            background: #0e141e;
+            border: 1px solid #2a3344;
+            border-radius: 12px;
+            color: #e8edf5;
+            font-size: 15px;
             transition: 0.2s;
         }
         .auth-box input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-glow);
+            outline: none;
+            border-color: #7c9cff;
+            box-shadow: 0 0 0 3px rgba(124, 156, 255, 0.2);
         }
-        .auth-box .btn-primary {
+        .auth-box button {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
+            background: #4a6cf7;
             border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary), #8b7cf7);
+            border-radius: 12px;
             color: #fff;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 16px;
             cursor: pointer;
             transition: 0.2s;
-            margin-top: 4px;
+            margin-top: 6px;
         }
-        .auth-box .btn-primary:hover {
+        .auth-box button:hover {
+            background: #5a7cff;
             transform: scale(1.01);
-            opacity: 0.92;
         }
-        .auth-box .btn-secondary {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 8px;
-            transition: 0.2s;
-        }
-        .auth-box .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--text);
-        }
-        .auth-box .switch-link {
+        .auth-box .switch {
             text-align: center;
-            margin-top: 14px;
-            font-size: 13px;
-            color: var(--text-dim);
+            margin-top: 16px;
+            color: #8a9bb5;
+            font-size: 14px;
         }
-        .auth-box .switch-link span {
-            color: var(--accent);
+        .auth-box .switch span {
+            color: #7c9cff;
             cursor: pointer;
             font-weight: 600;
         }
-        .auth-box .referral-badge {
-            background: var(--gold);
-            color: #000;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 12px;
+        .auth-box .switch span:hover {
+            text-decoration: underline;
         }
         .auth-error {
-            color: var(--red);
+            color: #ff6b6b;
             font-size: 13px;
+            margin-top: -8px;
+            margin-bottom: 12px;
             text-align: center;
-            margin-top: 6px;
-            min-height: 20px;
         }
-        /* ... باقي الأنماط ... */
+        .ref-badge {
+            background: #2a3a5a;
+            border-radius: 30px;
+            padding: 6px 18px;
+            font-size: 13px;
+            color: #b0c4ff;
+            margin-bottom: 18px;
+            display: inline-block;
+            border: 1px solid #4a6a9a;
+        }
+
+        /* ----- main app (hidden until auth) ----- */
+        #mainApp {
+            display: none;
+        }
+
+        /* ----- header & tabs ----- */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #1f2a3a;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .app-header .brand {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #b388ff, #82b1ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .app-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 14px;
+            color: #aab8d0;
+        }
+        .app-header .user-info .email {
+            color: #d0ddf5;
+        }
+        .app-header .user-info .logout-btn {
+            background: #2a3344;
+            border: none;
+            color: #e8edf5;
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .app-header .user-info .logout-btn:hover {
+            background: #3a4a6a;
+        }
+        .admin-badge {
+            background: #ffd54f;
+            color: #1a1f2a;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        /* tabs */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #1f2a3a;
+            padding-bottom: 4px;
+        }
+        .tabs .tab-btn {
+            background: transparent;
+            border: none;
+            color: #6a7a94;
+            padding: 10px 22px;
+            border-radius: 30px 30px 0 0;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: 0.2s;
+            position: relative;
+        }
+        .tabs .tab-btn:hover {
+            color: #c0d0e8;
+            background: #1a222e;
+        }
+        .tabs .tab-btn.active {
+            color: #e8edf5;
+            background: #1f2a3a;
+            box-shadow: 0 -2px 0 #4a6cf7;
+        }
+
+        /* tab content */
+        .tab-content {
+            display: none;
+            padding-top: 20px;
+            animation: fade 0.25s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fade {
+            0% {
+                opacity: 0.3;
+                transform: translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ----- chat (tab1) ----- */
+        .chat-top {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        .chat-top select {
+            background: #1a212c;
+            border: 1px solid #2a3344;
+            color: #e8edf5;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        .chat-top select:focus {
+            outline: none;
+            border-color: #4a6cf7;
+        }
+        .chat-top .room-count {
+            font-size: 13px;
+            color: #6a7a94;
+        }
+        .chat-box {
+            background: #0e141e;
+            border-radius: 16px;
+            height: 320px;
+            overflow-y: auto;
+            padding: 14px 16px;
+            border: 1px solid #1f2a3a;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .chat-box .msg {
+            padding: 6px 12px;
+            border-radius: 12px;
+            background: #1a212c;
+            max-width: 85%;
+            word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.5;
+            align-self: flex-start;
+        }
+        .chat-box .msg .sender {
+            font-weight: 600;
+            color: #82b1ff;
+            font-size: 12px;
+            display: block;
+        }
+        .chat-box .msg .time {
+            font-size: 10px;
+            color: #6a7a94;
+            margin-right: 8px;
+        }
+        .chat-box .msg.own {
+            align-self: flex-end;
+            background: #2a3a6a;
+        }
+        .chat-box .msg.own .sender {
+            color: #b388ff;
+        }
+        .chat-input-row {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-row input {
+            flex: 1;
+            padding: 10px 16px;
+            background: #0e141e;
+            border: 1px solid #2a3344;
+            border-radius: 30px;
+            color: #e8edf5;
+            font-size: 14px;
+        }
+        .chat-input-row input:focus {
+            outline: none;
+            border-color: #4a6cf7;
+        }
+        .chat-input-row button {
+            padding: 10px 24px;
+            background: #4a6cf7;
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .chat-input-row button:hover {
+            background: #5a7cff;
+        }
+        .chat-input-row button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .cooldown-hint {
+            font-size: 12px;
+            color: #6a7a94;
+            margin-top: 4px;
+            text-align: left;
+        }
+
+        /* ----- game (tab2) ----- */
+        .game-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: flex-start;
+        }
+        .game-wheel-wrap {
+            flex: 0 0 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #wheelCanvas {
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            border: 4px solid #2a3a5a;
+            background: #0e141e;
+            box-shadow: 0 0 30px rgba(74, 108, 247, 0.15);
+        }
+        .game-info {
+            flex: 1;
+            min-width: 220px;
+        }
+        .game-info .round-info {
+            font-size: 14px;
+            color: #aab8d0;
+            margin-bottom: 10px;
+        }
+        .game-info .round-info strong {
+            color: #e8edf5;
+        }
+        .game-bets {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .game-bets .bet-item {
+            background: #1a212c;
+            border: 1px solid #2a3344;
+            border-radius: 12px;
+            padding: 8px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 13px;
+        }
+        .game-bets .bet-item:hover {
+            border-color: #4a6cf7;
+            background: #1f2a3e;
+        }
+        .game-bets .bet-item.selected {
+            border-color: #b388ff;
+            background: #2a2a5a;
+        }
+        .game-bets .bet-item .emoji {
+            font-size: 26px;
+            display: block;
+        }
+        .game-bets .bet-item .label {
+            font-size: 12px;
+            color: #aab8d0;
+        }
+        .game-bets .bet-item .pool {
+            font-size: 11px;
+            color: #6a8a9a;
+        }
+        .bet-amount-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 12px 0;
+            flex-wrap: wrap;
+        }
+        .bet-amount-row input {
+            flex: 1;
+            padding: 8px 14px;
+            background: #0e141e;
+            border: 1px solid #2a3344;
+            border-radius: 30px;
+            color: #e8edf5;
+            font-size: 14px;
+            width: 100px;
+        }
+        .bet-amount-row input:focus {
+            outline: none;
+            border-color: #4a6cf7;
+        }
+        .bet-amount-row button {
+            padding: 8px 24px;
+            background: #4a6cf7;
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .bet-amount-row button:hover {
+            background: #5a7cff;
+        }
+        .bet-amount-row button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .game-result {
+            margin-top: 14px;
+            padding: 14px 18px;
+            background: #1a212c;
+            border-radius: 14px;
+            border: 1px solid #2a3344;
+            font-size: 15px;
+            min-height: 60px;
+        }
+        .game-result .winner {
+            color: #b388ff;
+            font-weight: 700;
+        }
+        .game-result .box-win {
+            color: #ffd54f;
+        }
+        .game-timer {
+            font-size: 20px;
+            font-weight: 700;
+            color: #82b1ff;
+            margin: 6px 0;
+        }
+
+        /* ----- wallet (tab3) ----- */
+        .wallet-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 600px) {
+            .wallet-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .wallet-card {
+            background: #1a212c;
+            border-radius: 16px;
+            padding: 18px 20px;
+            border: 1px solid #2a3344;
+        }
+        .wallet-card .label {
+            font-size: 12px;
+            color: #6a7a94;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .wallet-card .value {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 6px 0 4px;
+            word-break: break-all;
+        }
+        .wallet-card .value.small {
+            font-size: 13px;
+            font-weight: 400;
+            color: #aab8d0;
+        }
+        .wallet-card .qr-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 8px 0;
+        }
+        .wallet-card .qr-wrap canvas,
+        .wallet-card .qr-wrap img {
+            border-radius: 12px;
+            background: #fff;
+            padding: 8px;
+            width: 140px;
+            height: 140px;
+        }
+        .wallet-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .wallet-actions button {
+            padding: 8px 20px;
+            background: #2a3344;
+            border: none;
+            border-radius: 30px;
+            color: #e8edf5;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .wallet-actions button:hover {
+            background: #3a4a6a;
+        }
+        .wallet-actions button.primary {
+            background: #4a6cf7;
+        }
+        .wallet-actions button.primary:hover {
+            background: #5a7cff;
+        }
+        .wallet-actions button.danger {
+            background: #b34141;
+        }
+        .wallet-actions button.danger:hover {
+            background: #d44a4a;
+        }
+        .withdraw-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #1f2a3a;
+        }
+        .withdraw-section input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #0e141e;
+            border: 1px solid #2a3344;
+            border-radius: 12px;
+            color: #e8edf5;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .withdraw-section input:focus {
+            outline: none;
+            border-color: #4a6cf7;
+        }
+        .withdraw-section .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ----- settings (tab4) ----- */
+        .settings-group {
+            background: #1a212c;
+            border-radius: 16px;
+            padding: 20px 24px;
+            border: 1px solid #2a3344;
+            margin-bottom: 18px;
+        }
+        .settings-group h4 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #b0c4ff;
+        }
+        .settings-group .row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .settings-group input {
+            flex: 1;
+            padding: 10px 14px;
+            background: #0e141e;
+            border: 1px solid #2a3344;
+            border-radius: 12px;
+            color: #e8edf5;
+            font-size: 14px;
+            min-width: 160px;
+        }
+        .settings-group input:focus {
+            outline: none;
+            border-color: #4a6cf7;
+        }
+        .settings-group button {
+            padding: 10px 24px;
+            background: #4a6cf7;
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .settings-group button:hover {
+            background: #5a7cff;
+        }
+        .settings-group .ref-link {
+            background: #0e141e;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid #2a3344;
+            word-break: break-all;
+            font-size: 14px;
+            color: #82b1ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .settings-group .ref-link button {
+            padding: 4px 16px;
+            font-size: 12px;
+            background: #2a3344;
+        }
+        .settings-group .ref-link button:hover {
+            background: #3a4a6a;
+        }
+
+        /* ----- admin panel ----- */
+        #adminPanel {
+            display: none;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 2px solid #ffd54f40;
+        }
+        #adminPanel .admin-title {
+            color: #ffd54f;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 600px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .admin-card {
+            background: #1a212c;
+            border-radius: 14px;
+            padding: 16px 18px;
+            border: 1px solid #2a3344;
+        }
+        .admin-card h5 {
+            color: #b0c4ff;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .admin-card input,
+        .admin-card select {
+            width: 100%;
+            padding: 8px 12px;
+            background: #0e141e;
+            border: 1px solid #2a3344;
+            border-radius: 10px;
+            color: #e8edf5;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .admin-card input:focus,
+        .admin-card select:focus {
+            outline: none;
+            border-color: #4a6cf7;
+        }
+        .admin-card button {
+            padding: 6px 18px;
+            background: #2a3344;
+            border: none;
+            border-radius: 30px;
+            color: #e8edf5;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .admin-card button:hover {
+            background: #3a4a6a;
+        }
+        .admin-card button.primary {
+            background: #4a6cf7;
+        }
+        .admin-card button.primary:hover {
+            background: #5a7cff;
+        }
+        .admin-card button.danger {
+            background: #b34141;
+        }
+        .admin-card button.danger:hover {
+            background: #d44a4a;
+        }
+        .admin-card .hint {
+            font-size: 11px;
+            color: #6a7a94;
+            margin-top: 4px;
+        }
+
+        /* ----- toasts ----- */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            pointer-events: none;
+            max-width: 90%;
+        }
+        .toast {
+            background: #1a212c;
+            border: 1px solid #2a3344;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            color: #e8edf5;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            pointer-events: auto;
+            animation: slideDown 0.25s ease;
+            text-align: center;
+            min-width: 200px;
+        }
+        .toast.success {
+            border-color: #4caf50;
+        }
+        .toast.error {
+            border-color: #ff6b6b;
+        }
+        .toast.warning {
+            border-color: #ffd54f;
+        }
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* responsive */
+        @media (max-width: 640px) {
+            #app {
+                padding: 14px;
+            }
+            .tabs .tab-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+            .game-bets {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .wallet-grid {
+                grid-template-columns: 1fr;
+            }
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+            .game-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            #wheelCanvas {
+                width: 200px;
+                height: 200px;
+            }
+        }
         .hidden {
             display: none !important;
         }
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--card);
-            color: var(--text);
-            padding: 12px 24px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            font-size: 14px;
-            z-index: 999;
-            max-width: 90%;
-            text-align: center;
-            animation: fadeIn 0.3s;
+        .mt-8 {
+            margin-top: 8px;
         }
-        .toast.success {
-            border-color: var(--green);
-            color: var(--green);
+        .mt-12 {
+            margin-top: 12px;
         }
-        .toast.error {
-            border-color: var(--red);
-            color: var(--red);
+        .gap-6 {
+            gap: 6px;
         }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
         }
     </style>
 </head>
 <body>
 
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== APP ===== -->
     <div id="app">
-        <!-- ========== AUTH SCREEN ========== -->
-        <div id="authScreen" class="auth-screen">
-            <div class="logo">🔷 VaultLine</div>
-            <div class="sub">بوليغون • محادثات • ألعاب</div>
-            <div class="auth-box" id="authBox">
-                <h3 id="authTitle">تسجيل الدخول</h3>
-                <div id="referralBadge" class="referral-badge hidden">🎁 تمت الإحالة! ستحصل على 3 POL عند التسجيل</div>
-                <div id="authError" class="auth-error"></div>
-                <input type="email" id="authEmail" placeholder="البريد الإلكتروني" />
-                <input type="password" id="authPassword" placeholder="كلمة المرور" />
-                <button class="btn-primary" id="authSubmitBtn">دخول</button>
-                <button class="btn-secondary" id="authSwitchBtn">إنشاء حساب جديد</button>
-                <div class="switch-link">
-                    <span id="authSwitchText">ليس لديك حساب؟ إنشاء حساب</span>
+
+        <!-- ======= AUTH SCREEN ======= -->
+        <div id="authScreen">
+            <div class="logo">⛓️ VaultLine</div>
+            <div class="sub">محادثات · لعبة عجلة · محفظة</div>
+            <div id="refBadge" class="ref-badge hidden">🎁 تم الدعوة عبر رابط إحالة</div>
+
+            <div class="auth-box">
+                <div id="authForm">
+                    <input type="email" id="authEmail" placeholder="البريد الإلكتروني" />
+                    <input type="password" id="authPassword" placeholder="كلمة السر" />
+                    <div id="authError" class="auth-error"></div>
+                    <button id="authSubmitBtn">تسجيل الدخول</button>
+                    <div class="switch">
+                        ليس لديك حساب؟ <span id="authSwitchBtn">إنشاء حساب جديد</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- ========== MAIN APP ========== -->
-        <div id="mainApp" class="hidden" style="display:none;flex-direction:column;flex:1;">
-            <!-- Header -->
+        <!-- ======= MAIN APP ======= -->
+        <div id="mainApp">
+
+            <!-- header -->
             <div class="app-header">
-                <div class="title">🔷 VaultLine</div>
+                <div class="brand">⛓️ VaultLine</div>
                 <div class="user-info">
-                    <span class="bal" id="headerBalance">0 POL</span>
-                    <button class="logout-btn" id="logoutBtn" title="تسجيل خروج">⏻</button>
+                    <span class="email" id="userEmailDisplay">user@email.com</span>
+                    <span id="adminBadge" class="admin-badge hidden">مدير</span>
+                    <button class="logout-btn" id="logoutBtn">تسجيل خروج</button>
                 </div>
             </div>
 
-            <!-- Tab Content (محذوف للاختصار لكنه موجود كاملاً في الردود السابقة) -->
-            <div id="tabChat" class="tab-content active">...</div>
-            <div id="tabGame" class="tab-content">...</div>
-            <div id="tabWallet" class="tab-content">...</div>
-            <div id="tabSettings" class="tab-content">...</div>
+            <!-- tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="tabChat">💬 محادثة</button>
+                <button class="tab-btn" data-tab="tabGame">🎡 لعبة</button>
+                <button class="tab-btn" data-tab="tabWallet">💳 محفظة</button>
+                <button class="tab-btn" data-tab="tabSettings">⚙️ إعدادات</button>
+            </div>
 
-            <!-- Tab Bar -->
-            <div class="tab-bar">...</div>
-        </div>
-    </div>
+            <!-- ===== TAB 1: CHAT ===== -->
+            <div class="tab-content active" id="tabChat">
+                <div class="chat-top">
+                    <select id="roomSelect"></select>
+                    <span class="room-count" id="roomCount"></span>
+                    <span style="flex:1;"></span>
+                    <span style="font-size:13px;color:#6a7a94;">⏳ رسالة كل 5 ثوان</span>
+                </div>
+                <div class="chat-box" id="chatBox"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="chatInput" placeholder="اكتب رسالتك..." />
+                    <button id="sendBtn">إرسال</button>
+                </div>
+                <div class="cooldown-hint" id="cooldownHint">جاهز للإرسال</div>
+            </div>
 
+            <!-- ===== TAB 2: GAME ===== -->
+            <div class="tab-content" id="tabGame">
+                <div class="game-row">
+                    <div class="game-wheel-wrap">
+                        <canvas id="wheelCanvas" width="260" height="260"></canvas>
+                        <div class="game-timer" id="gameTimer">⏳ 60</div>
+                    </div>
+                    <div class="game-info">
+                        <div class="round-info">الدورة #<strong id="roundNum">0</strong> · <span id="gameStatus">انتظار</span></div>
+                        <div class="game-bets" id="betOptions">
+                            <div class="bet-item" data-choice="cherry"><span class="emoji">🍒</span><span class="label">كرزة</span><span class="pool" id="poolCherry">0</span></div>
+                            <div class="bet-item" data-choice="banana"><span class="emoji">🍌</span><span class="label">موزة</span><span class="pool" id="poolBanana">0</span></div>
+                            <div class="bet-item" data-choice="apple"><span class="emoji">🍎</span><span class="label">تفاحة</span><span class="pool" id="poolApple">0</span></div>
+                            <div class="bet-item" data-choice="cow"><span class="emoji">🐄</span><span class="label">بقرة</span><span class="pool" id="poolCow">0</span></div>
+                            <div class="bet-item" data-choice="fish"><span class="emoji">🐟</span><span class="label">سمكة</span><span class="pool" id="poolFish">0</span></div>
+                            <div class="bet-item" data-choice="chicken"><span class="emoji">🐔</span><span class="label">دجاجة</span><span class="pool" id="poolChicken">0</span></div>
+                        </div>
+                        <div class="bet-amount-row">
+                            <input type="number" id="betAmount" placeholder="الكمية (POL)" min="0.1" step="0.1" value="1" />
+                            <button id="placeBetBtn">وضع رهان</button>
+                            <span style="font-size:13px;color:#6a7a94;" id="userBalanceGame">رصيدك: 0 POL</span>
+                        </div>
+                        <div class="game-result" id="gameResult">🎲 انتظر بدء الدورة...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB 3: WALLET ===== -->
+            <div class="tab-content" id="tabWallet">
+                <div class="wallet-grid">
+                    <div class="wallet-card">
+                        <div class="label">العنوان العام</div>
+                        <div class="value small" id="walletAddress">0x...</div>
+                        <div class="qr-wrap" id="qrCodeContainer"></div>
+                        <div class="wallet-actions">
+                            <button id="copyAddressBtn">📋 نسخ</button>
+                            <button id="downloadQrBtn">⬇️ تحميل QR</button>
+                        </div>
+                    </div>
+                    <div class="wallet-card">
+                        <div class="label">الرصيد</div>
+                        <div class="value" id="walletBalance">0.00 POL</div>
+                        <div class="label" style="margin-top:6px;">القيمة بالدولار</div>
+                        <div class="value" id="walletUsd" style="font-size:16px;">$0.00</div>
+                        <div class="withdraw-section">
+                            <div class="label">سحب إلى محفظة خارجية</div>
+                            <input type="text" id="withdrawAddress" placeholder="عنوان المحفظة (Polygon)" />
+                            <div class="row">
+                                <input type="number" id="withdrawAmount" placeholder="الكمية (POL)" min="100" step="1" />
+                                <button class="primary" id="withdrawBtn">سحب</button>
+                            </div>
+                            <div class="hint" style="font-size:11px;color:#6a7a94;">الحد الأدنى 100 POL</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB 4: SETTINGS ===== -->
+            <div class="tab-content" id="tabSettings">
+                <div class="settings-group">
+                    <h4>🔑 تغيير كلمة السر</h4>
+                    <div class="row">
+                        <input type="password" id="newPassword" placeholder="كلمة السر الجديدة" />
+                        <button id="changePasswordBtn">تغيير</button>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h4>🔗 رابط الإحالة الخاص بك</h4>
+                    <div class="ref-link" id="refLinkDisplay">
+                        <span id="refLinkText">جاري التحميل...</span>
+                        <button id="copyRefBtn">📋 نسخ</button>
+                    </div>
+                    <div style="font-size:12px;color:#6a7a94;margin-top:8px;">كل مشترك عبر رابطك يمنحك 3 POL</div>
+                </div>
+            </div>
+
+            <!-- ===== ADMIN PANEL ===== -->
+            <div id="adminPanel">
+                <div class="admin-title">🛡️ لوحة المدير</div>
+                <div class="admin-grid">
+                    <!-- إنشاء غرفة -->
+                    <div class="admin-card">
+                        <h5>➕ إنشاء غرفة جديدة</h5>
+                        <input type="text" id="newRoomName" placeholder="اسم الغرفة" />
+                        <button class="primary" id="createRoomBtn">إنشاء</button>
+                    </div>
+                    <!-- طرد مؤقت -->
+                    <div class="admin-card">
+                        <h5>⏳ طرد مؤقت (4 ساعات)</h5>
+                        <input type="email" id="muteEmail" placeholder="بريد المستخدم" />
+                        <button id="muteUserBtn">طرد مؤقت</button>
+                    </div>
+                    <!-- حظر نهائي -->
+                    <div class="admin-card">
+                        <h5>🚫 حظر نهائي</h5>
+                        <input type="email" id="banEmail" placeholder="بريد المستخدم" />
+                        <button class="danger" id="banUserBtn">حظر</button>
+                    </div>
+                    <!-- سحب من الصندوق -->
+                    <div class="admin-card">
+                        <h5>💰 سحب من الصندوق</h5>
+                        <input type="text" id="adminWithdrawAddr" placeholder="عنوان خارجي" />
+                        <input type="number" id="adminWithdrawAmt" placeholder="الكمية (POL)" step="1" />
+                        <button class="primary" id="adminWithdrawBtn">سحب</button>
+                    </div>
+                    <!-- توزيع الأرباح -->
+                    <div class="admin-card">
+                        <h5>📊 توزيع الأرباح</h5>
+                        <input type="number" id="profitAmount" placeholder="المبلغ (POL)" step="0.1" />
+                        <button class="primary" id="distributeProfitBtn">توزيع حسب التواجد</button>
+                        <div class="hint">يوزع على المستخدمين حسب مدة تواجدهم في الغرف</div>
+                    </div>
+                    <!-- عرض إحصائيات -->
+                    <div class="admin-card">
+                        <h5>📈 إحصائيات سريعة</h5>
+                        <button id="adminStatsBtn">عرض الإحصائيات</button>
+                        <div id="adminStatsDisplay" style="font-size:13px;color:#aab8d0;margin-top:8px;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /mainApp -->
+    </div><!-- /app -->
+
+    <!-- ================================================================== -->
+    <!-- ========================= JAVASCRIPT ============================= -->
+    <!-- ================================================================== -->
     <script>
-        // =====================================================================
-        //  CONFIG - استبدل هذه القيم بمشروعك
-        // =====================================================================
-        const SUPABASE_URL = 'https://your-project.supabase.co'; // <-- استبدل
-        const SUPABASE_ANON_KEY = 'sb_publishable_9cQ59wQ3cK6K6bjrLVHxCw_DWuu4uZl';
-        const POLYGON_RPC = 'https://polygon-rpc.com';
-        const ADMIN_EMAIL = 'youcanuseoneold@gmail.com';
-        const REFERRAL_BASE = 'https://vaultline-evm.github.io/pol/pol';
-        const FRUITS = [
-            { id: 'cherry', emoji: '🍒', label: 'كرزة' },
-            { id: 'banana', emoji: '🍌', label: 'موزة' },
-            { id: 'apple', emoji: '🍎', label: 'تفاحة' },
-            { id: 'cow', emoji: '🐄', label: 'بقرة' },
-            { id: 'fish', emoji: '🐟', label: 'سمكة' },
-            { id: 'chicken', emoji: '🐔', label: 'دجاجة' },
-        ];
-        const GAME_ROUND_SECONDS = 60;
-        const MIN_BET = 0.1;
-        const MAX_BET = 1000;
-        const WITHDRAW_MIN = 100;
-        const MSG_COOLDOWN = 5000;
+        (function() {
+            'use strict';
 
-        // =====================================================================
-        //  SUPABASE CLIENT
-        // =====================================================================
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            // ================================================================
+            //  SUPABASE
+            // ================================================================
+            const SUPABASE_URL = 'https://your-project.supabase.co'; // <-- استبدل
+            const SUPABASE_KEY =
+            'sb_publishable_9cQ59wQ3cK6K6bjrLVHxCw_DWuu4uZl'; // المفتاح المقدم
 
-        // =====================================================================
-        //  STATE
-        // =====================================================================
-        let currentUser = null;
-        let currentRoomId = null;
-        let messages = [];
-        let gameState = {
-            round: 0,
-            result: null,
-            timer: GAME_ROUND_SECONDS,
-            bets: {},
-            history: [],
-            spinning: false,
-            roundActive: false,
-        };
-        let encryptedPrivateKey = null;
-        let decryptedPrivateKey = null;
-        let chatCooldown = false;
-        let gameInterval = null;
-        let timerInterval = null;
-        let qrInstance = null;
+            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // =====================================================================
-        //  DOM REFS
-        // =====================================================================
-        const $ = (id) => document.getElementById(id);
-        const authScreen = $('authScreen');
-        const mainApp = $('mainApp');
-        const authTitle = $('authTitle');
-        const authEmail = $('authEmail');
-        const authPassword = $('authPassword');
-        const authSubmitBtn = $('authSubmitBtn');
-        const authSwitchBtn = $('authSwitchBtn');
-        const authSwitchText = $('authSwitchText');
-        const authError = $('authError');
-        const referralBadge = $('referralBadge');
-        const headerBalance = $('headerBalance');
-        const logoutBtn = $('logoutBtn');
-        const chatInput = $('chatInput');
-        const chatSendBtn = $('chatSendBtn');
-        const wheelCanvas = $('wheelCanvas');
-        const roundNum = $('roundNum');
-        const gameTimer = $('gameTimer');
-        const fruitBets = $('fruitBets');
-        const betAmount = $('betAmount');
-        const placeBetBtn = $('placeBetBtn');
-        const gameResult = $('gameResult');
-        const gameHistory = $('gameHistory');
-        const walletAddress = $('walletAddress');
-        const qrContainer = $('qrContainer');
-        const walletPolBalance = $('walletPolBalance');
-        const walletUsdBalance = $('walletUsdBalance');
-        const withdrawAddress = $('withdrawAddress');
-        const withdrawAmount = $('withdrawAmount');
-        const withdrawBtn = $('withdrawBtn');
-        const newPassword = $('newPassword');
-        const confirmPassword = $('confirmPassword');
-        const changePasswordBtn = $('changePasswordBtn');
-        const referralLink = $('referralLink');
-        const copyRefBtn = $('copyRefBtn');
-        const adminPanel = $('adminPanel');
-        const adminRoomName = $('adminRoomName');
-        const adminCreateRoomBtn = $('adminCreateRoomBtn');
-        const adminBanEmail = $('adminBanEmail');
-        const adminBanType = $('adminBanType');
-        const adminBanBtn = $('adminBanBtn');
-        const adminDistributeBtn = $('adminDistributeBtn');
-        const adminWithdrawBtn = $('adminWithdrawBtn');
+            // ================================================================
+            //  CONSTANTS
+            // ================================================================
+            const ADMIN_EMAIL = 'youcanuseoneold@gmail.com';
+            const GAME_CHOICES = ['cherry', 'banana', 'apple', 'cow', 'fish', 'chicken'];
+            const CHOICE_EMOJI = { cherry: '🍒', banana: '🍌', apple: '🍎', cow: '🐄', fish: '🐟', chicken: '🐔' };
+            const CHOICE_LABEL = { cherry: 'كرزة', banana: 'موزة', apple: 'تفاحة', cow: 'بقرة', fish: 'سمكة', chicken: 'دجاجة' };
+            const COOLDOWN_SEC = 5;
+            const BET_WINDOW_SEC = 60;
+            const MIN_WITHDRAW = 100;
+            const REFERRAL_BONUS = 3;
+            const SIGNUP_BONUS = 10;
 
-        // =====================================================================
-        //  UTILITY FUNCTIONS
-        // =====================================================================
-        function toast(msg, type = '') {
-            const old = document.querySelector('.toast');
-            if (old) old.remove();
-            const el = document.createElement('div');
-            el.className = 'toast ' + type;
-            el.textContent = msg;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 4000);
-        }
-
-        function getRefCode() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('ref') || null;
-        }
-
-        function generateRefCode() {
-            return Math.random().toString(36).substring(2, 10).toUpperCase();
-        }
-
-        function getFruitById(id) { return FRUITS.find(f => f.id === id); }
-
-        // =====================================================================
-        //  ENCRYPTION
-        // =====================================================================
-        async function deriveKey(password, salt) {
-            const enc = new TextEncoder();
-            const keyMat = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
-            return crypto.subtle.deriveKey({
-                    name: 'PBKDF2',
-                    salt: enc.encode(salt),
-                    iterations: 100000,
-                    hash: 'SHA-256'
-                },
-                keyMat, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
-            );
-        }
-
-        async function encryptPrivateKey(privateKey, password) {
-            const salt = crypto.getRandomValues(new Uint8Array(16));
-            const iv = crypto.getRandomValues(new Uint8Array(12));
-            const key = await deriveKey(password, salt);
-            const enc = new TextEncoder();
-            const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv },
-                key,
-                enc.encode(privateKey)
-            );
-            const combined = new Uint8Array(salt.length + iv.length + data.byteLength);
-            combined.set(salt, 0);
-            combined.set(iv, salt.length);
-            combined.set(new Uint8Array(data), salt.length + iv.length);
-            return btoa(String.fromCharCode(...combined));
-        }
-
-        async function decryptPrivateKey(encrypted, password) {
-            const raw = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
-            const salt = raw.slice(0, 16);
-            const iv = raw.slice(16, 28);
-            const data = raw.slice(28);
-            const key = await deriveKey(password, salt);
-            const dec = await crypto.subtle.decrypt({ name: 'AES-GCM', iv },
-                key,
-                data
-            );
-            return new TextDecoder().decode(dec);
-        }
-
-        // =====================================================================
-        //  WALLET
-        // =====================================================================
-        async function createWallet() {
-            const wallet = ethers.Wallet.createRandom();
-            return {
-                address: wallet.address,
-                privateKey: wallet.privateKey,
-                mnemonic: wallet.mnemonic.phrase,
+            // ================================================================
+            //  STATE
+            // ================================================================
+            let currentUser = null; // { id, email, is_admin, balance, public_address, referral_code, encrypted_privkey? }
+            let currentRoom = null;
+            let messages = [];
+            let gameState = {
+                round: 0,
+                status: 'idle', // idle | betting | spinning | result
+                timer: 0,
+                bets: {}, // choice -> total
+                userBet: null, // { choice, amount }
+                result: null,
+                winner: null,
+                boxProfit: 0,
+                roundStartTime: null,
             };
-        }
+            let cooldownUntil = 0;
+            let gameInterval = null;
+            let chatInterval = null;
+            let isAdmin = false;
+            let walletPrivateKey = null; // decrypted in memory only
 
-        async function getPolPrice() {
-            try {
-                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=matic-network&vs_currencies=usd');
-                const data = await res.json();
-                return data['matic-network']?.usd || 0.5;
-            } catch {
-                return 0.5;
+            // ================================================================
+            //  DOM REFS
+            // ================================================================
+            const $ = id => document.getElementById(id);
+            const authScreen = $('authScreen');
+            const mainApp = $('mainApp');
+            const authEmail = $('authEmail');
+            const authPassword = $('authPassword');
+            const authError = $('authError');
+            const authSubmitBtn = $('authSubmitBtn');
+            const authSwitchBtn = $('authSwitchBtn');
+            const refBadge = $('refBadge');
+            const userEmailDisplay = $('userEmailDisplay');
+            const adminBadge = $('adminBadge');
+            const logoutBtn = $('logoutBtn');
+            const roomSelect = $('roomSelect');
+            const roomCount = $('roomCount');
+            const chatBox = $('chatBox');
+            const chatInput = $('chatInput');
+            const sendBtn = $('sendBtn');
+            const cooldownHint = $('cooldownHint');
+            const wheelCanvas = $('wheelCanvas');
+            const gameTimer = $('gameTimer');
+            const roundNum = $('roundNum');
+            const gameStatus = $('gameStatus');
+            const betOptions = $('betOptions');
+            const betAmount = $('betAmount');
+            const placeBetBtn = $('placeBetBtn');
+            const userBalanceGame = $('userBalanceGame');
+            const gameResult = $('gameResult');
+            const walletAddress = $('walletAddress');
+            const qrCodeContainer = $('qrCodeContainer');
+            const copyAddressBtn = $('copyAddressBtn');
+            const downloadQrBtn = $('downloadQrBtn');
+            const walletBalance = $('walletBalance');
+            const walletUsd = $('walletUsd');
+            const withdrawAddress = $('withdrawAddress');
+            const withdrawAmount = $('withdrawAmount');
+            const withdrawBtn = $('withdrawBtn');
+            const newPassword = $('newPassword');
+            const changePasswordBtn = $('changePasswordBtn');
+            const refLinkText = $('refLinkText');
+            const copyRefBtn = $('copyRefBtn');
+            const adminPanel = $('adminPanel');
+            const newRoomName = $('newRoomName');
+            const createRoomBtn = $('createRoomBtn');
+            const muteEmail = $('muteEmail');
+            const muteUserBtn = $('muteUserBtn');
+            const banEmail = $('banEmail');
+            const banUserBtn = $('banUserBtn');
+            const adminWithdrawAddr = $('adminWithdrawAddr');
+            const adminWithdrawAmt = $('adminWithdrawAmt');
+            const adminWithdrawBtn = $('adminWithdrawBtn');
+            const profitAmount = $('profitAmount');
+            const distributeProfitBtn = $('distributeProfitBtn');
+            const adminStatsBtn = $('adminStatsBtn');
+            const adminStatsDisplay = $('adminStatsDisplay');
+
+            // ================================================================
+            //  TOAST
+            // ================================================================
+            function toast(msg, type = 'info') {
+                const c = document.getElementById('toastContainer');
+                const el = document.createElement('div');
+                el.className = 'toast ' + type;
+                el.textContent = msg;
+                c.appendChild(el);
+                setTimeout(() => { el.style.opacity = '0';
+                    setTimeout(() => el.remove(), 400); }, 3000);
             }
-        }
 
-        // =====================================================================
-        //  AUTH - المحور الرئيسي (تم التصحيح)
-        // =====================================================================
-        let isLogin = true;
+            // ================================================================
+            //  UTILITY
+            // ================================================================
+            function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-        function toggleAuthMode() {
-            isLogin = !isLogin;
-            authTitle.textContent = isLogin ? 'تسجيل الدخول' : 'إنشاء حساب';
-            authSubmitBtn.textContent = isLogin ? 'دخول' : 'إنشاء حساب';
-            authSwitchBtn.textContent = isLogin ? 'إنشاء حساب جديد' : 'لدي حساب بالفعل';
-            authSwitchText.textContent = isLogin ? 'ليس لديك حساب؟ إنشاء حساب' : 'لديك حساب؟ تسجيل الدخول';
-            authError.textContent = '';
-            const ref = getRefCode();
-            referralBadge.classList.toggle('hidden', isLogin || !ref);
-        }
+            function formatTime(ts) {
+                const d = new Date(ts);
+                return d.toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' });
+            }
 
-        authSwitchBtn.addEventListener('click', toggleAuthMode);
-        authSwitchText.addEventListener('click', toggleAuthMode);
+            function getReferralCode() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('ref') || null;
+            }
 
-        authSubmitBtn.addEventListener('click', async () => {
-            const email = authEmail.value.trim();
-            const password = authPassword.value;
-            if (!email || !password) { authError.textContent = 'يرجى ملء جميع الحقول'; return; }
-            authError.textContent = '';
-            authSubmitBtn.disabled = true;
-            authSubmitBtn.textContent = 'جاري...';
+            function generateReferralCode() {
+                return Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6);
+            }
 
-            try {
-                if (isLogin) {
-                    await handleLogin(email, password);
+            // ================================================================
+            //  WALLET (Ethers)
+            // ================================================================
+            async function createWallet() {
+                const wallet = ethers.Wallet.createRandom();
+                return {
+                    address: wallet.address,
+                    privateKey: wallet.privateKey,
+                    mnemonic: wallet.mnemonic.phrase,
+                };
+            }
+
+            // encrypt private key with password (simple AES-like using Web Crypto)
+            async function encryptPrivateKey(privateKey, password) {
+                const enc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey(
+                    'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+                );
+                const key = await crypto.subtle.deriveKey({
+                        name: 'PBKDF2',
+                        salt: enc.encode('vaultline-salt'),
+                        iterations: 100000,
+                        hash: 'SHA-256'
+                    },
+                    keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt']
+                );
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv },
+                    key, enc.encode(privateKey)
+                );
+                const combined = new Uint8Array(iv.length + encrypted.byteLength);
+                combined.set(iv);
+                combined.set(new Uint8Array(encrypted), iv.length);
+                return btoa(String.fromCharCode(...combined));
+            }
+
+            async function decryptPrivateKey(encryptedB64, password) {
+                const combined = Uint8Array.from(atob(encryptedB64), c => c.charCodeAt(0));
+                const iv = combined.slice(0, 12);
+                const data = combined.slice(12);
+                const enc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey(
+                    'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+                );
+                const key = await crypto.subtle.deriveKey({
+                        name: 'PBKDF2',
+                        salt: enc.encode('vaultline-salt'),
+                        iterations: 100000,
+                        hash: 'SHA-256'
+                    },
+                    keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+                );
+                const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv },
+                    key, data
+                );
+                return new TextDecoder().decode(decrypted);
+            }
+
+            // ================================================================
+            //  SUPABASE HELPERS
+            // ================================================================
+            async function getUserByEmail(email) {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('email', email)
+                    .maybeSingle();
+                if (error && error.code !== 'PGRST116') throw error;
+                return data;
+            }
+
+            async function getUserById(id) {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', id)
+                    .maybeSingle();
+                if (error) throw error;
+                return data;
+            }
+
+            async function getRooms() {
+                const { data, error } = await supabase
+                    .from('chat_rooms')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+                if (error) throw error;
+                return data || [];
+            }
+
+            async function getMessages(roomId, limit = 100) {
+                const { data, error } = await supabase
+                    .from('messages')
+                    .select('*, users!inner(email)')
+                    .eq('room_id', roomId)
+                    .order('created_at', { ascending: true })
+                    .limit(limit);
+                if (error) throw error;
+                return data || [];
+            }
+
+            async function sendMessage(roomId, userId, content) {
+                const { data, error } = await supabase
+                    .from('messages')
+                    .insert({ room_id: roomId, user_id: userId, content })
+                    .select('*, users!inner(email)')
+                    .single();
+                if (error) throw error;
+                return data;
+            }
+
+            async function getGameRound(roomId) {
+                const { data, error } = await supabase
+                    .from('game_rounds')
+                    .select('*')
+                    .eq('room_id', roomId)
+                    .order('round_number', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+                if (error) throw error;
+                return data;
+            }
+
+            async function getBetsForRound(roundId) {
+                const { data, error } = await supabase
+                    .from('bets')
+                    .select('*')
+                    .eq('round_id', roundId);
+                if (error) throw error;
+                return data || [];
+            }
+
+            async function placeBet(roundId, userId, choice, amount) {
+                const { data, error } = await supabase
+                    .from('bets')
+                    .insert({ round_id: roundId, user_id: userId, choice, amount })
+                    .select()
+                    .single();
+                if (error) throw error;
+                return data;
+            }
+
+            async function updateUserBalance(userId, newBalance) {
+                const { error } = await supabase
+                    .from('users')
+                    .update({ balance: newBalance })
+                    .eq('id', userId);
+                if (error) throw error;
+            }
+
+            async function createChatRoom(name, creatorId) {
+                const { data, error } = await supabase
+                    .from('chat_rooms')
+                    .insert({ name, created_by: creatorId })
+                    .select()
+                    .single();
+                if (error) throw error;
+                return data;
+            }
+
+            async function muteUser(email, durationHours = 4) {
+                const user = await getUserByEmail(email);
+                if (!user) throw new Error('المستخدم غير موجود');
+                const until = new Date(Date.now() + durationHours * 3600 * 1000);
+                const { error } = await supabase
+                    .from('users')
+                    .update({ muted_until: until.toISOString() })
+                    .eq('id', user.id);
+                if (error) throw error;
+                return user;
+            }
+
+            async function banUser(email) {
+                const user = await getUserByEmail(email);
+                if (!user) throw new Error('المستخدم غير موجود');
+                const { error } = await supabase
+                    .from('users')
+                    .update({ is_banned: true })
+                    .eq('id', user.id);
+                if (error) throw error;
+                return user;
+            }
+
+            async function getActiveUsersInRooms() {
+                // احصائية بسيطة للمدير
+                const { data, error } = await supabase
+                    .from('user_sessions')
+                    .select('user_id, room_id, join_time, leave_time')
+                    .is('leave_time', null);
+                if (error) throw error;
+                return data || [];
+            }
+
+            // ================================================================
+            //  AUTH
+            // ================================================================
+            let isLoginMode = true;
+
+            authSwitchBtn.addEventListener('click', () => {
+                isLoginMode = !isLoginMode;
+                authSubmitBtn.textContent = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب';
+                authSwitchBtn.textContent = isLoginMode ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
+                authError.textContent = '';
+                // check referral
+                const ref = getReferralCode();
+                if (!isLoginMode && ref) {
+                    refBadge.classList.remove('hidden');
                 } else {
-                    await handleRegister(email, password);
-                }
-            } catch (e) {
-                authError.textContent = e.message || 'حدث خطأ';
-                authSubmitBtn.disabled = false;
-                authSubmitBtn.textContent = isLogin ? 'دخول' : 'إنشاء حساب';
-            }
-        });
-
-        async function handleLogin(email, password) {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) throw new Error(error.message);
-            await loadUserData(password);
-            showApp();
-            toast('تم تسجيل الدخول بنجاح', 'success');
-            authSubmitBtn.disabled = false;
-            authSubmitBtn.textContent = 'دخول';
-        }
-
-        async function handleRegister(email, password) {
-            // 1. التحقق من عدم وجود المستخدم مسبقاً في profiles
-            const { data: existingProfile } = await supabaseClient
-                .from('profiles')
-                .select('id')
-                .eq('email', email)
-                .maybeSingle();
-
-            if (existingProfile) {
-                throw new Error('البريد الإلكتروني مستخدم بالفعل');
-            }
-
-            // 2. إنشاء المحفظة
-            const wallet = await createWallet();
-            const encrypted = await encryptPrivateKey(wallet.privateKey, password);
-
-            // 3. التسجيل في Supabase Auth
-            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: {
-                        public_address: wallet.address
-                    }
+                    refBadge.classList.add('hidden');
                 }
             });
 
-            if (authError) {
-                // إذا كان المستخدم موجوداً في Auth ولكن ليس في profiles (حالة نادرة)
-                if (authError.message.includes('already registered')) {
-                    throw new Error('البريد الإلكتروني مسجل بالفعل، يرجى تسجيل الدخول');
+            authSubmitBtn.addEventListener('click', async () => {
+                const email = authEmail.value.trim();
+                const password = authPassword.value;
+                if (!email || !password) {
+                    authError.textContent = 'الرجاء ملء جميع الحقول';
+                    return;
                 }
-                throw new Error(authError.message);
+                authError.textContent = '';
+                authSubmitBtn.disabled = true;
+                authSubmitBtn.textContent = 'جاري...';
+
+                try {
+                    if (isLoginMode) {
+                        await handleLogin(email, password);
+                    } else {
+                        await handleSignup(email, password);
+                    }
+                } catch (err) {
+                    authError.textContent = err.message || 'حدث خطأ';
+                    toast(err.message || 'خطأ', 'error');
+                } finally {
+                    authSubmitBtn.disabled = false;
+                    authSubmitBtn.textContent = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب';
+                }
+            });
+
+            async function handleLogin(email, password) {
+                // 1. auth with supabase
+                const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({ email, password });
+                if (authErr) throw new Error('بريد أو كلمة سر غير صحيحة');
+
+                // 2. get user from our table
+                let user = await getUserByEmail(email);
+                if (!user) {
+                    // create user record if missing (shouldn't happen)
+                    throw new Error('الرجاء إنشاء حساب أولاً');
+                }
+
+                // 3. check ban
+                if (user.is_banned) {
+                    throw new Error('تم حظر هذا الحساب');
+                }
+
+                // 4. decrypt private key
+                let privKey = null;
+                if (user.encrypted_private_key) {
+                    try {
+                        privKey = await decryptPrivateKey(user.encrypted_private_key, password);
+                    } catch (e) {
+                        console.warn('فك تشفير المفتاح الخاص فشل:', e);
+                    }
+                }
+
+                currentUser = { ...user };
+                walletPrivateKey = privKey;
+                isAdmin = (email === ADMIN_EMAIL);
+
+                // 5. enter app
+                enterApp();
+                toast('تم تسجيل الدخول بنجاح', 'success');
             }
 
-            const userId = authData.user.id;
-            const refCode = generateRefCode();
-            const referredBy = getRefCode();
+            async function handleSignup(email, password) {
+                // check if user exists
+                const existing = await getUserByEmail(email);
+                if (existing) throw new Error('البريد الإلكتروني مستخدم بالفعل');
 
-            // 4. إدراج البيانات في جدول profiles
-            const { error: profileError } = await supabaseClient
-                .from('profiles')
-                .insert({
+                // 1. create wallet
+                const wallet = await createWallet();
+                const publicAddress = wallet.address;
+                const privateKey = wallet.privateKey;
+                // مفتاح 24 كلمة - لا نخزنه ولا نعرضه
+                // private key encrypted with password
+                const encrypted = await encryptPrivateKey(privateKey, password);
+
+                // 2. referral
+                const refCode = getReferralCode();
+                let referredBy = null;
+                let referrer = null;
+                if (refCode) {
+                    const { data: refUser, error: refErr } = await supabase
+                        .from('users')
+                        .select('id')
+                        .eq('referral_code', refCode)
+                        .maybeSingle();
+                    if (!refErr && refUser) {
+                        referredBy = refUser.id;
+                        referrer = refUser;
+                    }
+                }
+
+                // 3. create user in supabase auth
+                const { data: authData, error: authErr } = await supabase.auth.signUp({
+                    email,
+                    password,
+                });
+                if (authErr) throw new Error('فشل إنشاء الحساب: ' + authErr.message);
+
+                const userId = authData.user.id;
+
+                // 4. create user record
+                const myRefCode = generateReferralCode();
+                const newUser = {
                     id: userId,
-                    email: email,
-                    public_address: wallet.address,
+                    email,
+                    public_address: publicAddress,
                     encrypted_private_key: encrypted,
-                    balance: 10,
-                    referral_code: refCode,
-                    referred_by: referredBy || null,
-                    is_admin: email === ADMIN_EMAIL,
+                    balance: SIGNUP_BONUS,
+                    referral_code: myRefCode,
+                    referred_by: referredBy,
+                    is_admin: (email === ADMIN_EMAIL),
                     is_banned: false,
-                    ban_expires: null,
-                    username: email.split('@')[0],
-                });
+                    muted_until: null,
+                    created_at: new Date().toISOString(),
+                };
+                const { error: insertErr } = await supabase
+                    .from('users')
+                    .insert(newUser);
+                if (insertErr) {
+                    // rollback? just throw
+                    throw new Error('فشل حفظ بيانات المستخدم: ' + insertErr.message);
+                }
 
-            if (profileError) {
-                // إذا فشل الإدراج، نحذف المستخدم من Auth للحفاظ على التكامل
-                await supabaseClient.auth.admin.deleteUser(userId);
-                throw new Error('فشل إنشاء الملف الشخصي: ' + profileError.message);
-            }
-
-            // 5. معالجة الإحالة
-            if (referredBy) {
-                const { data: referrer } = await supabaseClient
-                    .from('profiles')
-                    .select('id, balance')
-                    .eq('referral_code', referredBy)
-                    .single();
-
+                // 5. give referral bonus
                 if (referrer) {
-                    await supabaseClient
-                        .from('profiles')
-                        .update({ balance: (referrer.balance || 0) + 3 })
-                        .eq('id', referrer.id);
-
-                    await supabaseClient
-                        .from('referrals')
-                        .insert({
-                            referrer_id: referrer.id,
-                            referred_id: userId,
-                            bonus_amount: 3,
-                        });
+                    const refUser = await getUserById(referrer.id);
+                    if (refUser) {
+                        const newBal = (refUser.balance || 0) + REFERRAL_BONUS;
+                        await updateUserBalance(refUser.id, newBal);
+                        // سجل المكافأة
+                        await supabase
+                            .from('referral_rewards')
+                            .insert({
+                                referrer_id: referrer.id,
+                                referred_id: userId,
+                                amount: REFERRAL_BONUS,
+                            });
+                    }
                 }
+
+                // 6. auto-login
+                currentUser = { ...newUser };
+                walletPrivateKey = privateKey;
+                isAdmin = (email === ADMIN_EMAIL);
+
+                enterApp();
+                toast('✅ تم إنشاء الحساب! رصيدك ' + SIGNUP_BONUS + ' POL', 'success');
+
+                // لا نعرض أبداً المفتاح الخاص أو العبارة السرية
+                console.log('Wallet created for', email, 'address:', publicAddress);
             }
 
-            // 6. تحميل بيانات المستخدم
-            await loadUserData(password);
-            showApp();
-            toast('تم إنشاء الحساب بنجاح! 🎉 رصيدك 10 POL', 'success');
-            authSubmitBtn.disabled = false;
-            authSubmitBtn.textContent = 'إنشاء حساب';
-        }
+            // ================================================================
+            //  ENTER APP
+            // ================================================================
+            function enterApp() {
+                authScreen.style.display = 'none';
+                mainApp.style.display = 'block';
+                userEmailDisplay.textContent = currentUser.email;
+                if (isAdmin) {
+                    adminBadge.classList.remove('hidden');
+                    adminPanel.style.display = 'block';
+                } else {
+                    adminBadge.classList.add('hidden');
+                    adminPanel.style.display = 'none';
+                }
+                // load rooms
+                loadRooms();
+                // load wallet
+                updateWalletUI();
+                // start game loop
+                startGameLoop();
+                // start chat polling
+                startChatPolling();
+                // listen for new messages via realtime
+                setupRealtime();
+                // update balance display
+                updateBalanceDisplay();
+                // show ref link
+                updateRefLink();
+            }
 
-        async function loadUserData(password) {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) throw new Error('لم يتم العثور على المستخدم');
-
-            const { data: profile, error } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
-            if (error) {
-                // إذا لم يكن هناك بروفايل، ننشئ واحداً تلقائياً (حالة نادرة)
-                if (error.code === 'PGRST116') {
-                    // محاولة إنشاء بروفايل
-                    const wallet = await createWallet();
-                    const encrypted = await encryptPrivateKey(wallet.privateKey, password);
-                    const refCode = generateRefCode();
-                    await supabaseClient.from('profiles').insert({
-                        id: user.id,
-                        email: user.email,
-                        public_address: wallet.address,
-                        encrypted_private_key: encrypted,
-                        balance: 10,
-                        referral_code: refCode,
-                        is_admin: user.email === ADMIN_EMAIL,
-                        is_banned: false,
-                        username: user.email.split('@')[0],
+            // ================================================================
+            //  CHAT
+            // ================================================================
+            async function loadRooms() {
+                try {
+                    const rooms = await getRooms();
+                    roomSelect.innerHTML = '';
+                    rooms.forEach(r => {
+                        const opt = document.createElement('option');
+                        opt.value = r.id;
+                        opt.textContent = r.name;
+                        roomSelect.appendChild(opt);
                     });
-                    // إعادة التحميل
-                    return loadUserData(password);
-                }
-                throw new Error(error.message);
-            }
-
-            currentUser = {
-                id: user.id,
-                email: user.email,
-                public_address: profile.public_address,
-                balance: profile.balance || 0,
-                referral_code: profile.referral_code,
-                is_admin: profile.is_admin || false,
-                is_banned: profile.is_banned || false,
-                ban_expires: profile.ban_expires,
-                username: profile.username || user.email.split('@')[0],
-                encrypted_private_key: profile.encrypted_private_key,
-            };
-
-            encryptedPrivateKey = profile.encrypted_private_key;
-            if (encryptedPrivateKey && password) {
-                try {
-                    decryptedPrivateKey = await decryptPrivateKey(encryptedPrivateKey, password);
-                } catch {
-                    decryptedPrivateKey = null;
-                }
-            }
-
-            // التحقق من الحظر
-            if (currentUser.is_banned) {
-                const expires = currentUser.ban_expires;
-                if (expires && new Date(expires) > new Date()) {
-                    toast('🚫 أنت محظور مؤقتاً حتى ' + new Date(expires).toLocaleString(), 'error');
-                } else if (!expires) {
-                    toast('🚫 أنت محظور بشكل نهائي', 'error');
-                }
-            }
-
-            updateUI();
-            await loadRooms();
-            await loadGameState();
-            startGameLoop();
-            startTimerLoop();
-        }
-
-        // =====================================================================
-        //  UI UPDATES
-        // =====================================================================
-        function showApp() {
-            authScreen.style.display = 'none';
-            mainApp.style.display = 'flex';
-            mainApp.classList.remove('hidden');
-            if (currentUser && currentUser.is_admin) {
-                adminPanel.classList.remove('hidden');
-            } else {
-                adminPanel.classList.add('hidden');
-            }
-        }
-
-        function updateUI() {
-            if (!currentUser) return;
-            headerBalance.textContent = (currentUser.balance || 0).toFixed(2) + ' POL';
-            walletPolBalance.textContent = (currentUser.balance || 0).toFixed(2) + ' POL';
-            walletAddress.textContent = currentUser.public_address || '0x...';
-            referralLink.textContent = REFERRAL_BASE + '?ref=' + (currentUser.referral_code || '');
-            generateQR(currentUser.public_address);
-            updateWalletUsd();
-            if (currentUser.is_admin) {
-                adminPanel.classList.remove('hidden');
-            } else {
-                adminPanel.classList.add('hidden');
-            }
-        }
-
-        async function updateWalletUsd() {
-            try {
-                const price = await getPolPrice();
-                const usd = (currentUser.balance || 0) * price;
-                walletUsdBalance.textContent = '$' + usd.toFixed(2);
-            } catch {
-                walletUsdBalance.textContent = '$0.00';
-            }
-        }
-
-        function generateQR(address) {
-            qrContainer.innerHTML = '';
-            if (!address || address === '0x...') {
-                qrContainer.innerHTML = '<div class="text-dim" style="padding:20px;">لا يوجد عنوان</div>';
-                return;
-            }
-            try {
-                new QRCode(qrContainer, {
-                    text: address,
-                    width: 120,
-                    height: 120,
-                    colorDark: '#000000',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H,
-                });
-            } catch (e) {
-                qrContainer.innerHTML = '<div class="text-dim" style="padding:20px;">⚠️ خطأ في إنشاء QR</div>';
-            }
-        }
-
-        // =====================================================================
-        //  CHAT & GAME (نفس الكود السابق، محذوف للاختصار)
-        // =====================================================================
-        // ... (جميع دوال المحادثة واللعبة كما هي، لم تتغير)
-
-        // =====================================================================
-        //  LOGOUT
-        // =====================================================================
-        logoutBtn.addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
-            decryptedPrivateKey = null;
-            currentUser = null;
-            location.reload();
-        });
-
-        // =====================================================================
-        //  INIT
-        // =====================================================================
-        async function init() {
-            const ref = getRefCode();
-            if (ref) {
-                referralBadge.classList.remove('hidden');
-                referralBadge.textContent = '🎁 تمت الإحالة! ستحصل على 3 POL عند التسجيل';
-            }
-
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                try {
-                    await loadUserData(null);
-                    showApp();
+                    roomCount.textContent = rooms.length + ' غرفة';
+                    if (rooms.length > 0) {
+                        currentRoom = rooms[0].id;
+                        roomSelect.value = currentRoom;
+                        loadMessages(currentRoom);
+                    } else {
+                        // if no rooms, create default
+                        if (isAdmin) {
+                            await createChatRoom('العامة', currentUser.id);
+                            loadRooms();
+                        } else {
+                            chatBox.innerHTML =
+                            '<div style="color:#6a7a94;text-align:center;padding:40px;">لا توجد غرف متاحة</div>';
+                        }
+                    }
                 } catch (e) {
-                    toast('خطأ في استعادة الجلسة', 'error');
-                    await supabaseClient.auth.signOut();
+                    toast('خطأ في تحميل الغرف: ' + e.message, 'error');
                 }
             }
-        }
 
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_OUT') {
-                location.reload();
+            roomSelect.addEventListener('change', () => {
+                currentRoom = roomSelect.value;
+                loadMessages(currentRoom);
+            });
+
+            async function loadMessages(roomId) {
+                try {
+                    const msgs = await getMessages(roomId);
+                    messages = msgs;
+                    renderMessages();
+                } catch (e) {
+                    toast('خطأ في تحميل الرسائل', 'error');
+                }
             }
-        });
 
-        // رسم العجلة (مع التصحيح)
-        function drawWheel() {
-            const canvas = wheelCanvas;
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const rect = canvas.parentElement?.getBoundingClientRect();
-            if (!rect) return;
-            let size = Math.min(rect.width, rect.height, 340);
-            if (size < 20) size = 200;
-            canvas.width = size;
-            canvas.height = size;
-            const cx = size / 2,
-                cy = size / 2;
-            const r = Math.max(10, size / 2 - 8);
-            ctx.clearRect(0, 0, size, size);
-            // ... رسم القطع ...
-        }
+            function renderMessages() {
+                chatBox.innerHTML = '';
+                messages.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'msg';
+                    if (m.user_id === currentUser.id) div.classList.add('own');
+                    const sender = m.users?.email || 'مجهول';
+                    div.innerHTML = `
+                <span class="sender">${sender}</span>
+                <span>${m.content}</span>
+                <span class="time">${formatTime(m.created_at)}</span>
+              `;
+                    chatBox.appendChild(div);
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
 
-        const ro = new ResizeObserver(() => drawWheel());
-        const wheelWrapper = document.querySelector('.wheel-wrapper');
-        if (wheelWrapper) ro.observe(wheelWrapper);
-        setInterval(drawWheel, 2000);
+            let lastMsgTime = 0;
 
-        init().catch(console.error);
+            sendBtn.addEventListener('click', sendChatMessage);
+            chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 
-        window.addEventListener('load', () => {
-            setTimeout(drawWheel, 500);
-            if (!currentUser) {
+            async function sendChatMessage() {
+                const content = chatInput.value.trim();
+                if (!content) return;
+                if (!currentRoom) { toast('اختر غرفة أولاً', 'warning'); return; }
+
+                // cooldown
+                const now = Date.now();
+                if (now < cooldownUntil) {
+                    const left = Math.ceil((cooldownUntil - now) / 1000);
+                    toast(`انتظر ${left} ثانية`, 'warning');
+                    return;
+                }
+
+                // check mute
+                if (currentUser.muted_until && new Date(currentUser.muted_until) > new Date()) {
+                    toast('أنت مطرود مؤقتاً', 'error');
+                    return;
+                }
+                if (currentUser.is_banned) {
+                    toast('تم حظرك', 'error');
+                    return;
+                }
+
+                try {
+                    const msg = await sendMessage(currentRoom, currentUser.id, content);
+                    messages.push(msg);
+                    renderMessages();
+                    chatInput.value = '';
+                    cooldownUntil = Date.now() + COOLDOWN_SEC * 1000;
+                    updateCooldownHint();
+                } catch (e) {
+                    toast('فشل إرسال الرسالة: ' + e.message, 'error');
+                }
+            }
+
+            function updateCooldownHint() {
+                const now = Date.now();
+                if (now < cooldownUntil) {
+                    const left = Math.ceil((cooldownUntil - now) / 1000);
+                    cooldownHint.textContent = `⏳ انتظر ${left} ثانية`;
+                    sendBtn.disabled = true;
+                    setTimeout(updateCooldownHint, 500);
+                } else {
+                    cooldownHint.textContent = '✅ جاهز للإرسال';
+                    sendBtn.disabled = false;
+                }
+            }
+
+            function startChatPolling() {
+                if (chatInterval) clearInterval(chatInterval);
+                chatInterval = setInterval(() => {
+                    if (currentRoom) loadMessages(currentRoom);
+                }, 3000);
+            }
+
+            function setupRealtime() {
+                supabase
+                    .channel('messages')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' },
+                        (payload) => {
+                            if (payload.new.room_id === currentRoom) {
+                                // add to messages if not already
+                                const exists = messages.some(m => m.id === payload.new.id);
+                                if (!exists) {
+                                    messages.push(payload.new);
+                                    renderMessages();
+                                }
+                            }
+                        }
+                    )
+                    .subscribe();
+            }
+
+            // ================================================================
+            //  GAME (WHEEL)
+            // ================================================================
+            let gameRoundId = null;
+            let betPlacedForRound = false;
+            let selectedChoice = null;
+
+            // draw wheel
+            function drawWheel(highlight = null) {
+                const ctx = wheelCanvas.getContext('2d');
+                const w = wheelCanvas.width,
+                    h = wheelCanvas.height;
+                const cx = w / 2,
+                    cy = h / 2,
+                    r = Math.min(w, h) / 2 - 10;
+                const colors = ['#e74c3c', '#f39c12', '#2ecc71', '#3498db', '#9b59b6', '#1abc9c'];
+                const n = GAME_CHOICES.length;
+                const arc = (2 * Math.PI) / n;
+
+                ctx.clearRect(0, 0, w, h);
+                GAME_CHOICES.forEach((ch, i) => {
+                    const start = i * arc - Math.PI / 2;
+                    const end = start + arc;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.arc(cx, cy, r, start, end);
+                    ctx.closePath();
+                    ctx.fillStyle = (highlight === ch) ? '#ffd54f' : colors[i % colors.length];
+                    ctx.fill();
+                    ctx.strokeStyle = '#1a1f2a';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // text
+                    const mid = start + arc / 2;
+                    const tx = cx + (r * 0.65) * Math.cos(mid);
+                    const ty = cy + (r * 0.65) * Math.sin(mid);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 18px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(CHOICE_EMOJI[ch] || '?', tx, ty);
+                });
+                // center dot
+                ctx.beginPath();
+                ctx.arc(cx, cy, 12, 0, 2 * Math.PI);
+                ctx.fillStyle = '#1a212c';
+                ctx.fill();
+                ctx.strokeStyle = '#4a6cf7';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+
+            // select bet
+            document.querySelectorAll('.bet-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    if (gameState.status !== 'betting') {
+                        toast('الرهانات غير مفتوحة حالياً', 'warning');
+                        return;
+                    }
+                    document.querySelectorAll('.bet-item').forEach(e => e.classList.remove('selected'));
+                    el.classList.add('selected');
+                    selectedChoice = el.dataset.choice;
+                });
+            });
+
+            placeBetBtn.addEventListener('click', async () => {
+                if (!selectedChoice) { toast('اختر خياراً أولاً', 'warning'); return; }
+                if (gameState.status !== 'betting') { toast('الرهانات غير مفتوحة', 'warning'); return; }
+                if (betPlacedForRound) { toast('وضعت رهاناً لهذه الدورة', 'warning'); return; }
+                const amount = parseFloat(betAmount.value);
+                if (!amount || amount <= 0) { toast('أدخل كمية صحيحة', 'warning'); return; }
+                if (amount > (currentUser.balance || 0)) { toast('رصيد غير كافٍ', 'error'); return; }
+
+                try {
+                    // get current round
+                    const round = await getGameRound(currentRoom);
+                    if (!round || round.status !== 'betting') {
+                        toast('الدورة غير متاحة للرهان', 'warning');
+                        return;
+                    }
+
+                    // place bet
+                    await placeBet(round.id, currentUser.id, selectedChoice, amount);
+
+                    // deduct from user balance locally and db
+                    const newBal = (currentUser.balance || 0) - amount;
+                    await updateUserBalance(currentUser.id, newBal);
+                    currentUser.balance = newBal;
+                    updateBalanceDisplay();
+
+                    betPlacedForRound = true;
+                    toast(`تم وضع رهان ${amount} POL على ${CHOICE_LABEL[selectedChoice]}`, 'success');
+                    // update pool display
+                    updatePoolDisplay(round.id);
+                } catch (e) {
+                    toast('فشل وضع الرهان: ' + e.message, 'error');
+                }
+            });
+
+            async function updatePoolDisplay(roundId) {
+                try {
+                    const bets = await getBetsForRound(roundId);
+                    const totals = {};
+                    GAME_CHOICES.forEach(ch => totals[ch] = 0);
+                    bets.forEach(b => { totals[b.choice] = (totals[b.choice] || 0) + b.amount; });
+                    GAME_CHOICES.forEach(ch => {
+                        const el = document.getElementById('pool' + ch.charAt(0).toUpperCase() + ch.slice(1));
+                        if (el) el.textContent = totals[ch] || 0;
+                    });
+                } catch (e) { /* ignore */ }
+            }
+
+            // Game loop
+            async function startGameLoop() {
+                if (gameInterval) clearInterval(gameInterval);
+                // initial load
+                await syncGameState();
+                gameInterval = setInterval(async () => {
+                    await syncGameState();
+                }, 2000);
+            }
+
+            async function syncGameState() {
+                if (!currentRoom) return;
+                try {
+                    const round = await getGameRound(currentRoom);
+                    if (!round) {
+                        // create first round
+                        await createNewRound();
+                        return;
+                    }
+                    gameRoundId = round.id;
+                    roundNum.textContent = round.round_number;
+                    gameState.status = round.status;
+                    gameState.result = round.result;
+
+                    // update timer
+                    if (round.status === 'betting') {
+                        const elapsed = (Date.now() - new Date(round.created_at).getTime()) / 1000;
+                        const remaining = Math.max(0, BET_WINDOW_SEC - elapsed);
+                        gameTimer.textContent = '⏳ ' + Math.ceil(remaining);
+                        gameStatus.textContent = '🔄 مراهنة';
+                        if (remaining <= 0 && round.status === 'betting') {
+                            // time to spin
+                            await processSpin(round);
+                        }
+                    } else if (round.status === 'spinning') {
+                        gameStatus.textContent = '🎡 تدور...';
+                        gameTimer.textContent = '🌀';
+                    } else if (round.status === 'result') {
+                        gameStatus.textContent = '✅ النتيجة';
+                        gameTimer.textContent = '🎯';
+                        showResult(round);
+                    }
+
+                    // update pool
+                    await updatePoolDisplay(round.id);
+
+                    // check if user has bet
+                    if (currentUser) {
+                        const userBets = await supabase
+                            .from('bets')
+                            .select('*')
+                            .eq('round_id', round.id)
+                            .eq('user_id', currentUser.id)
+                            .maybeSingle();
+                        betPlacedForRound = !!userBets.data;
+                        if (userBets.data) {
+                            selectedChoice = userBets.data.choice;
+                            document.querySelectorAll('.bet-item').forEach(el => {
+                                el.classList.toggle('selected', el.dataset.choice === selectedChoice);
+                            });
+                        }
+                    }
+
+                    // if round is completed, create new after delay
+                    if (round.status === 'result' || round.status === 'completed') {
+                        const age = (Date.now() - new Date(round.updated_at || round.created_at).getTime()) / 1000;
+                        if (age > 8) {
+                            await createNewRound();
+                        }
+                    }
+
+                    // enable/disable betting
+                    const canBet = (round.status === 'betting' && !betPlacedForRound && currentUser && currentUser
+                        .balance > 0);
+                    placeBetBtn.disabled = !canBet;
+                    document.querySelectorAll('.bet-item').forEach(el => {
+                        el.style.cursor = canBet ? 'pointer' : 'default';
+                        el.style.opacity = canBet ? '1' : '0.5';
+                    });
+
+                    // update user balance display
+                    updateBalanceDisplay();
+
+                } catch (e) {
+                    console.warn('syncGameState error:', e);
+                }
+            }
+
+            async function createNewRound() {
+                if (!currentRoom) return;
+                try {
+                    // get last round number
+                    const last = await getGameRound(currentRoom);
+                    const num = (last ? last.round_number : 0) + 1;
+                    const { data, error } = await supabase
+                        .from('game_rounds')
+                        .insert({
+                            room_id: currentRoom,
+                            round_number: num,
+                            status: 'betting',
+                            result: null,
+                            created_at: new Date().toISOString(),
+                        })
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    gameRoundId = data.id;
+                    gameState.status = 'betting';
+                    gameState.result = null;
+                    betPlacedForRound = false;
+                    selectedChoice = null;
+                    document.querySelectorAll('.bet-item').forEach(el => el.classList.remove('selected'));
+                    gameResult.innerHTML = '🎲 وضع الرهانات مفتوح...';
+                    drawWheel();
+                } catch (e) {
+                    console.warn('createNewRound error:', e);
+                }
+            }
+
+            async function processSpin(round) {
+                try {
+                    // update status to spinning
+                    await supabase
+                        .from('game_rounds')
+                        .update({ status: 'spinning' })
+                        .eq('id', round.id);
+
+                    gameState.status = 'spinning';
+                    gameStatus.textContent = '🎡 تدور...';
+                    gameTimer.textContent = '🌀';
+
+                    // get all bets
+                    const bets = await getBetsForRound(round.id);
+                    const totals = {};
+                    GAME_CHOICES.forEach(ch => totals[ch] = 0);
+                    bets.forEach(b => { totals[b.choice] = (totals[b.choice] || 0) + b.amount; });
+
+                    // find choice with least total bet (box wins)
+                    let minChoice = GAME_CHOICES[0];
+                    let minAmount = Infinity;
+                    GAME_CHOICES.forEach(ch => {
+                        if (totals[ch] < minAmount) {
+                            minAmount = totals[ch];
+                            minChoice = ch;
+                        }
+                    });
+
+                    // if all zero, pick random
+                    if (minAmount === 0) {
+                        const nonZero = GAME_CHOICES.filter(ch => totals[ch] > 0);
+                        if (nonZero.length > 0) {
+                            minChoice = nonZero[Math.floor(Math.random() * nonZero.length)];
+                        } else {
+                            minChoice = GAME_CHOICES[Math.floor(Math.random() * GAME_CHOICES.length)];
+                        }
+                    }
+
+                    // simulate spin animation
+                    let spins = 10 + Math.floor(Math.random() * 10);
+                    let currentIdx = GAME_CHOICES.indexOf(minChoice);
+                    let delay = 100;
+                    for (let s = 0; s < spins; s++) {
+                        const idx = (currentIdx + s) % GAME_CHOICES.length;
+                        drawWheel(GAME_CHOICES[idx]);
+                        await sleep(delay);
+                        delay += 30;
+                    }
+                    drawWheel(minChoice);
+
+                    // calculate box profit
+                    const totalBet = Object.values(totals).reduce((a, b) => a + b, 0);
+                    const winAmount = totals[minChoice] || 0;
+                    const boxProfit = totalBet - winAmount;
+
+                    // update result
+                    await supabase
+                        .from('game_rounds')
+                        .update({
+                            status: 'result',
+                            result: minChoice,
+                            box_profit: boxProfit,
+                            updated_at: new Date().toISOString(),
+                        })
+                        .eq('id', round.id);
+
+                    // distribute winnings to winners (proportionally)
+                    if (winAmount > 0) {
+                        const winnerBets = bets.filter(b => b.choice === minChoice);
+                        const totalWin = winAmount;
+                        // give back to winners (they get their bet back + share of box profit? no, box keeps profit)
+                        // Actually, winners get their bet back (1:1) and box keeps the rest
+                        // But the user said "يمكن أن يربحون رهاناتهن" - they can win their bets
+                        // So winners get their bet back, box keeps the rest
+                        for (const wb of winnerBets) {
+                            const user = await getUserById(wb.user_id);
+                            if (user) {
+                                const newBal = (user.balance || 0) + wb.amount;
+                                await updateUserBalance(user.id, newBal);
+                                if (user.id === currentUser.id) {
+                                    currentUser.balance = newBal;
+                                }
+                            }
+                        }
+                    }
+
+                    // update box (admin) balance with profit
+                    const adminUser = await getUserByEmail(ADMIN_EMAIL);
+                    if (adminUser && boxProfit > 0) {
+                        const newBal = (adminUser.balance || 0) + boxProfit;
+                        await updateUserBalance(adminUser.id, newBal);
+                    }
+
+                    gameState.result = minChoice;
+                    gameState.status = 'result';
+                    showResult({ result: minChoice, box_profit: boxProfit });
+                    toast(`🎡 النتيجة: ${CHOICE_LABEL[minChoice]} | ربح الصندوق: ${boxProfit} POL`, 'success');
+
+                    updateBalanceDisplay();
+
+                    // after 6s, create new round
+                    setTimeout(() => {
+                        createNewRound();
+                    }, 6000);
+
+                } catch (e) {
+                    console.error('processSpin error:', e);
+                    toast('خطأ في معالجة الدورة', 'error');
+                }
+            }
+
+            function showResult(round) {
+                const choice = round.result;
+                const profit = round.box_profit || 0;
+                if (choice) {
+                    gameResult.innerHTML = `
+                🎯 النتيجة: <span class="winner">${CHOICE_EMOJI[choice]} ${CHOICE_LABEL[choice]}</span>
+                <br>💰 ربح الصندوق: <span class="box-win">${profit} POL</span>
+              `;
+                    drawWheel(choice);
+                } else {
+                    gameResult.innerHTML = '⚠️ لم تحدد النتيجة';
+                }
+            }
+
+            function updateBalanceDisplay() {
+                const bal = currentUser?.balance || 0;
+                userBalanceGame.textContent = `رصيدك: ${bal.toFixed(2)} POL`;
+                if (walletBalance) {
+                    walletBalance.textContent = bal.toFixed(2) + ' POL';
+                    // fake USD price
+                    const usd = bal * 0.45;
+                    walletUsd.textContent = '$' + usd.toFixed(2);
+                }
+            }
+
+            // ================================================================
+            //  WALLET UI
+            // ================================================================
+            function updateWalletUI() {
+                if (!currentUser) return;
+                const addr = currentUser.public_address || '0x...';
+                walletAddress.textContent = addr;
+                // QR
+                qrCodeContainer.innerHTML = '';
+                try {
+                    new QRCode(qrCodeContainer, {
+                        text: addr,
+                        width: 140,
+                        height: 140,
+                        colorDark: '#000000',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.H,
+                    });
+                } catch (e) {
+                    qrCodeContainer.textContent = '⚠️ خطأ في توليد QR';
+                }
+                updateBalanceDisplay();
+            }
+
+            copyAddressBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(walletAddress.textContent);
+                toast('تم نسخ العنوان', 'success');
+            });
+
+            downloadQrBtn.addEventListener('click', () => {
+                const canvas = qrCodeContainer.querySelector('canvas');
+                if (canvas) {
+                    const link = document.createElement('a');
+                    link.download = 'wallet_qr.png';
+                    link.href = canvas.toDataURL();
+                    link.click();
+                } else {
+                    toast('لا يوجد QR للتحميل', 'warning');
+                }
+            });
+
+            // Withdraw
+            withdrawBtn.addEventListener('click', async () => {
+                const address = withdrawAddress.value.trim();
+                const amount = parseFloat(withdrawAmount.value);
+                if (!address) { toast('أدخل عنوان المحفظة', 'warning'); return; }
+                if (!amount || amount < MIN_WITHDRAW) { toast(`الحد الأدنى ${MIN_WITHDRAW} POL`, 'warning'); return; }
+                if (amount > (currentUser.balance || 0)) { toast('رصيد غير كافٍ', 'error'); return; }
+
+                try {
+                    // check if user has private key
+                    if (!walletPrivateKey) {
+                        // try to decrypt with password
+                        const pwd = prompt('أدخل كلمة السر لفك تشفير المفتاح الخاص:');
+                        if (!pwd) { toast('الإلغاء', 'warning'); return; }
+                        const user = await getUserByEmail(currentUser.email);
+                        if (user && user.encrypted_private_key) {
+                            walletPrivateKey = await decryptPrivateKey(user.encrypted_private_key, pwd);
+                        } else {
+                            throw new Error('لا يمكن فك تشفير المفتاح الخاص');
+                        }
+                    }
+
+                    // simulate sending transaction (in reality, sign and broadcast)
+                    // For demo, we just deduct balance
+                    const newBal = (currentUser.balance || 0) - amount;
+                    await updateUserBalance(currentUser.id, newBal);
+                    currentUser.balance = newBal;
+                    updateBalanceDisplay();
+                    updateWalletUI();
+
+                    // record withdrawal
+                    await supabase
+                        .from('withdrawals')
+                        .insert({
+                            user_id: currentUser.id,
+                            amount: amount,
+                            address: address,
+                            status: 'completed',
+                        });
+
+                    toast(`✅ تم سحب ${amount} POL إلى ${address.substring(0,10)}...`, 'success');
+                    withdrawAddress.value = '';
+                    withdrawAmount.value = '';
+
+                } catch (e) {
+                    toast('فشل السحب: ' + e.message, 'error');
+                }
+            });
+
+            // ================================================================
+            //  SETTINGS
+            // ================================================================
+            changePasswordBtn.addEventListener('click', async () => {
+                const newPwd = newPassword.value.trim();
+                if (!newPwd || newPwd.length < 6) {
+                    toast('كلمة السر يجب أن تكون 6 أحرف على الأقل', 'warning');
+                    return;
+                }
+                try {
+                    const { error } = await supabase.auth.updateUser({ password: newPwd });
+                    if (error) throw error;
+                    toast('تم تغيير كلمة السر بنجاح', 'success');
+                    newPassword.value = '';
+
+                    // re-encrypt private key with new password
+                    if (walletPrivateKey) {
+                        const encrypted = await encryptPrivateKey(walletPrivateKey, newPwd);
+                        await supabase
+                            .from('users')
+                            .update({ encrypted_private_key: encrypted })
+                            .eq('id', currentUser.id);
+                        toast('تم إعادة تشفير المفتاح الخاص', 'success');
+                    }
+                } catch (e) {
+                    toast('فشل التغيير: ' + e.message, 'error');
+                }
+            });
+
+            function updateRefLink() {
+                if (!currentUser) return;
+                const code = currentUser.referral_code || '';
+                const url = `https://vaultline-evm.github.io/pol/pol?ref=${code}`;
+                refLinkText.textContent = url;
+            }
+
+            copyRefBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(refLinkText.textContent);
+                toast('تم نسخ رابط الإحالة', 'success');
+            });
+
+            // ================================================================
+            //  ADMIN FUNCTIONS
+            // ================================================================
+            createRoomBtn.addEventListener('click', async () => {
+                const name = newRoomName.value.trim();
+                if (!name) { toast('أدخل اسم الغرفة', 'warning'); return; }
+                try {
+                    await createChatRoom(name, currentUser.id);
+                    toast('تم إنشاء الغرفة', 'success');
+                    newRoomName.value = '';
+                    loadRooms();
+                } catch (e) {
+                    toast('فشل: ' + e.message, 'error');
+                }
+            });
+
+            muteUserBtn.addEventListener('click', async () => {
+                const email = muteEmail.value.trim();
+                if (!email) { toast('أدخل بريد المستخدم', 'warning'); return; }
+                try {
+                    const user = await muteUser(email, 4);
+                    toast(`تم طرد ${user.email} مؤقتاً لمدة 4 ساعات`, 'success');
+                    muteEmail.value = '';
+                } catch (e) {
+                    toast('فشل: ' + e.message, 'error');
+                }
+            });
+
+            banUserBtn.addEventListener('click', async () => {
+                const email = banEmail.value.trim();
+                if (!email) { toast('أدخل بريد المستخدم', 'warning'); return; }
+                if (!confirm(`هل أنت متأكد من حظر ${email} نهائياً؟`)) return;
+                try {
+                    const user = await banUser(email);
+                    toast(`تم حظر ${user.email} نهائياً`, 'success');
+                    banEmail.value = '';
+                } catch (e) {
+                    toast('فشل: ' + e.message, 'error');
+                }
+            });
+
+            adminWithdrawBtn.addEventListener('click', async () => {
+                const addr = adminWithdrawAddr.value.trim();
+                const amt = parseFloat(adminWithdrawAmt.value);
+                if (!addr || !amt || amt <= 0) { toast('أدخل البيانات بشكل صحيح', 'warning'); return; }
+                // withdraw from box (admin)
+                try {
+                    const admin = await getUserByEmail(ADMIN_EMAIL);
+                    if (!admin) { toast('المدير غير موجود', 'error'); return; }
+                    if (amt > (admin.balance || 0)) { toast('رصيد الصندوق غير كافٍ', 'error'); return; }
+                    const newBal = (admin.balance || 0) - amt;
+                    await updateUserBalance(admin.id, newBal);
+                    // record
+                    await supabase
+                        .from('withdrawals')
+                        .insert({
+                            user_id: admin.id,
+                            amount: amt,
+                            address: addr,
+                            status: 'completed',
+                        });
+                    toast(`تم سحب ${amt} POL من الصندوق`, 'success');
+                    adminWithdrawAddr.value = '';
+                    adminWithdrawAmt.value = '';
+                    updateBalanceDisplay();
+                } catch (e) {
+                    toast('فشل: ' + e.message, 'error');
+                }
+            });
+
+            distributeProfitBtn.addEventListener('click', async () => {
+                const amount = parseFloat(profitAmount.value);
+                if (!amount || amount <= 0) { toast('أدخل مبلغاً صحيحاً', 'warning'); return; }
+
+                try {
+                    // get all active sessions (users in rooms)
+                    const sessions = await getActiveUsersInRooms();
+                    // group by user
+                    const userTime = {};
+                    sessions.forEach(s => {
+                        if (!s.user_id) return;
+                        const join = new Date(s.join_time).getTime();
+                        const now = Date.now();
+                        const duration = (now - join) / 1000; // seconds
+                        userTime[s.user_id] = (userTime[s.user_id] || 0) + duration;
+                    });
+
+                    const userIds = Object.keys(userTime);
+                    if (userIds.length === 0) {
+                        toast('لا يوجد مستخدمين نشطين', 'warning');
+                        return;
+                    }
+
+                    const totalTime = Object.values(userTime).reduce((a, b) => a + b, 0);
+                    if (totalTime <= 0) { toast('لا توجد مدة تواجد', 'warning'); return; }
+
+                    // distribute proportionally
+                    const admin = await getUserByEmail(ADMIN_EMAIL);
+                    if (!admin) { toast('المدير غير موجود', 'error'); return; }
+                    if (amount > (admin.balance || 0)) { toast('رصيد الصندوق غير كافٍ', 'error'); return; }
+
+                    // deduct from admin
+                    await updateUserBalance(admin.id, (admin.balance || 0) - amount);
+
+                    let distributed = 0;
+                    for (const uid of userIds) {
+                        const share = (userTime[uid] / totalTime) * amount;
+                        if (share < 0.001) continue;
+                        const user = await getUserById(uid);
+                        if (user && !user.is_admin) {
+                            const newBal = (user.balance || 0) + share;
+                            await updateUserBalance(user.id, newBal);
+                            distributed += share;
+                            if (uid === currentUser.id) {
+                                currentUser.balance = newBal;
+                            }
+                        }
+                    }
+
+                    toast(`✅ تم توزيع ${distributed.toFixed(2)} POL على ${userIds.length} مستخدم`, 'success');
+                    updateBalanceDisplay();
+                    profitAmount.value = '';
+
+                } catch (e) {
+                    toast('فشل التوزيع: ' + e.message, 'error');
+                }
+            });
+
+            adminStatsBtn.addEventListener('click', async () => {
+                try {
+                    const users = await supabase.from('users').select('count').single();
+                    const rooms = await supabase.from('chat_rooms').select('count').single();
+                    const bets = await supabase.from('bets').select('count').single();
+                    const admin = await getUserByEmail(ADMIN_EMAIL);
+                    adminStatsDisplay.innerHTML = `
+                👥 مستخدمين: ${users.data?.count || 0}
+                <br>🏠 غرف: ${rooms.data?.count || 0}
+                <br>🎲 رهانات: ${bets.data?.count || 0}
+                <br>💰 رصيد الصندوق: ${admin?.balance?.toFixed(2) || 0} POL
+              `;
+                } catch (e) {
+                    adminStatsDisplay.textContent = 'خطأ في جلب الإحصائيات';
+                }
+            });
+
+            // ================================================================
+            //  LOGOUT
+            // ================================================================
+            logoutBtn.addEventListener('click', async () => {
+                await supabase.auth.signOut();
+                currentUser = null;
+                walletPrivateKey = null;
+                isAdmin = false;
                 mainApp.style.display = 'none';
                 authScreen.style.display = 'flex';
-            }
-        });
+                if (gameInterval) clearInterval(gameInterval);
+                if (chatInterval) clearInterval(chatInterval);
+                toast('تم تسجيل الخروج', 'info');
+            });
 
-        console.log('🚀 VaultLine initialized');
-        console.log('📧 Admin:', ADMIN_EMAIL);
-        console.log('🔗 Referral base:', REFERRAL_BASE);
+            // ================================================================
+            //  INIT
+            // ================================================================
+            async function init() {
+                // check if already logged in
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    const user = await getUserByEmail(session.user.email);
+                    if (user && !user.is_banned) {
+                        currentUser = user;
+                        isAdmin = (user.email === ADMIN_EMAIL);
+                        // decrypt private key
+                        if (user.encrypted_private_key) {
+                            try {
+                                // we need password - prompt
+                                const pwd = prompt('أدخل كلمة السر لفك تشفير المحفظة:');
+                                if (pwd) {
+                                    walletPrivateKey = await decryptPrivateKey(user.encrypted_private_key, pwd);
+                                }
+                            } catch (e) { /* ignore */ }
+                        }
+                        enterApp();
+                        toast('مرحباً بعودتك', 'success');
+                        return;
+                    }
+                }
+
+                // show auth
+                const ref = getReferralCode();
+                if (ref) {
+                    refBadge.classList.remove('hidden');
+                } else {
+                    refBadge.classList.add('hidden');
+                }
+                authScreen.style.display = 'flex';
+                mainApp.style.display = 'none';
+            }
+
+            // check for referral in URL on load
+            window.addEventListener('load', () => {
+                init();
+                drawWheel();
+                // if no rooms, create default room if admin
+                setTimeout(async () => {
+                    if (currentUser && isAdmin) {
+                        const rooms = await getRooms();
+                        if (rooms.length === 0) {
+                            await createChatRoom('العامة', currentUser.id);
+                            loadRooms();
+                        }
+                    }
+                }, 1000);
+            });
+
+            // ================================================================
+            //  TAB SWITCHING
+            // ================================================================
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                    const target = document.getElementById(btn.dataset.tab);
+                    if (target) target.classList.add('active');
+                    // update wallet when switching to wallet tab
+                    if (btn.dataset.tab === 'tabWallet') updateWalletUI();
+                    if (btn.dataset.tab === 'tabGame') updateBalanceDisplay();
+                });
+            });
+
+            // ================================================================
+            //  AUTO REFRESH
+            // ================================================================
+            // check for new messages & game state periodically
+            setInterval(() => {
+                if (currentUser && currentRoom) {
+                    loadMessages(currentRoom);
+                }
+            }, 5000);
+
+            console.log('🚀 VaultLine loaded successfully');
+            console.log('🔑 Admin:', ADMIN_EMAIL);
+            console.log('🎡 Game choices:', GAME_CHOICES);
+
+        })();
     </script>
+
 </body>
 </html>
