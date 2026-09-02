@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VaultLine - المحادثات والعجلة</title>
+    <!-- تحميل المكتبات -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js">
@@ -11,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
     </script>
     <style>
-        /* ------ نفس التنسيقات السابقة ------ */
+        /* هنا نضع نفس الأنماط السابقة (لم تتغير) */
         * {
             margin: 0;
             padding: 0;
@@ -786,7 +787,7 @@
 
     <div id="app">
 
-        <!-- AUTH -->
+        <!-- AUTH SCREEN -->
         <div id="authScreen">
             <div class="logo">⛓️ VaultLine</div>
             <div class="sub">محادثات · لعبة عجلة · محفظة</div>
@@ -971,7 +972,8 @@
             const SUPABASE_URL = 'https://mbtdjanmfnmtxzsjrfgn.supabase.co';
             const SUPABASE_KEY = 'sb_publishable_9cQ59wQ3cK6K6bjrLVHxCw_DWuu4uZl';
 
-            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            // ✅ استخدام window.supabase لأن المكتبة تُحمَّل عبر script
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             // ================================================================
             //  CONSTANTS
@@ -1329,22 +1331,14 @@
             //  LOGIN
             // ================================================================
             async function handleLogin(email, password) {
-                // 1. تسجيل الدخول عبر Supabase Auth
                 const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({ email, password });
                 if (authErr) throw new Error('بريد أو كلمة سر غير صحيحة');
 
-                // 2. جلب بيانات المستخدم من جدول users
                 let user = await getUserByEmail(email);
-                if (!user) {
-                    // إذا لم يكن موجوداً، نقوم بإنشائه (للحالات النادرة)
-                    throw new Error('الرجاء إنشاء حساب أولاً');
-                }
+                if (!user) throw new Error('الرجاء إنشاء حساب أولاً');
 
-                if (user.is_banned) {
-                    throw new Error('تم حظر هذا الحساب');
-                }
+                if (user.is_banned) throw new Error('تم حظر هذا الحساب');
 
-                // 3. محاولة فك تشفير المفتاح الخاص (اختياري)
                 let privKey = null;
                 if (user.encrypted_private_key) {
                     try {
@@ -1366,19 +1360,15 @@
             //  SIGNUP
             // ================================================================
             async function handleSignup(email, password) {
-                // 1. التأكد من عدم وجود المستخدم مسبقاً
                 const existing = await getUserByEmail(email);
                 if (existing) throw new Error('البريد الإلكتروني مستخدم بالفعل');
 
-                // 2. إنشاء محفظة جديدة
                 const wallet = await createWallet();
                 const publicAddress = wallet.address;
                 const privateKey = wallet.privateKey;
 
-                // 3. تشفير المفتاح الخاص
                 const encrypted = await encryptPrivateKey(privateKey, password);
 
-                // 4. معالجة الإحالة
                 const refCode = getReferralCode();
                 let referredBy = null;
                 let referrer = null;
@@ -1394,7 +1384,6 @@
                     }
                 }
 
-                // 5. إنشاء المستخدم في Auth
                 const { data: authData, error: authErr } = await supabase.auth.signUp({
                     email,
                     password,
@@ -1403,7 +1392,6 @@
 
                 const userId = authData.user.id;
 
-                // 6. إدراج سجل المستخدم في جدول users
                 const myRefCode = generateReferralCode();
                 const newUser = {
                     id: userId,
@@ -1421,12 +1409,8 @@
                 const { error: insertErr } = await supabase
                     .from('users')
                     .insert(newUser);
-                if (insertErr) {
-                    // يمكن حذف المستخدم من Auth إذا فشل الإدراج (نقوم بذلك يدوياً)
-                    throw new Error('فشل حفظ بيانات المستخدم: ' + insertErr.message);
-                }
+                if (insertErr) throw new Error('فشل حفظ بيانات المستخدم: ' + insertErr.message);
 
-                // 7. مكافأة الإحالة
                 if (referrer) {
                     const refUser = await getUserById(referrer.id);
                     if (refUser) {
@@ -1442,7 +1426,6 @@
                     }
                 }
 
-                // 8. تعيين المستخدم الحالي
                 currentUser = { ...newUser };
                 walletPrivateKey = privateKey;
                 isAdmin = (email === ADMIN_EMAIL);
@@ -2005,7 +1988,6 @@
                         }
                     }
 
-                    // خصم الرصيد
                     const newBal = (currentUser.balance || 0) - amount;
                     await updateUserBalance(currentUser.id, newBal);
                     currentUser.balance = newBal;
