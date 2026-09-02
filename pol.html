@@ -14,6 +14,7 @@
     </script>
 
     <style>
+        /* جميع الأنماط كما هي - لم تتغير */
         * {
             margin: 0;
             padding: 0;
@@ -58,8 +59,6 @@
             position: relative;
             border: 1px solid var(--border);
         }
-
-        /* Auth screens */
         .auth-screen {
             display: flex;
             flex-direction: column;
@@ -173,8 +172,6 @@
             margin-top: 6px;
             min-height: 20px;
         }
-
-        /* Main app header */
         .app-header {
             padding: 12px 16px;
             display: flex;
@@ -219,8 +216,6 @@
             background: var(--border);
             color: var(--red);
         }
-
-        /* Tab content */
         .tab-content {
             flex: 1;
             overflow-y: auto;
@@ -231,8 +226,6 @@
         .tab-content.active {
             display: flex;
         }
-
-        /* Tab bar */
         .tab-bar {
             display: flex;
             border-top: 1px solid var(--border);
@@ -273,8 +266,6 @@
             background: var(--accent);
             border-radius: 0 0 4px 4px;
         }
-
-        /* Chat tab */
         .chat-room-selector {
             display: flex;
             gap: 8px;
@@ -391,8 +382,6 @@
             opacity: 0.4;
             cursor: not-allowed;
         }
-
-        /* Game tab */
         .game-container {
             display: flex;
             flex-direction: column;
@@ -571,8 +560,6 @@
         .game-history .h-item .h-lose {
             color: var(--red);
         }
-
-        /* Wallet tab */
         .wallet-container {
             display: flex;
             flex-direction: column;
@@ -676,8 +663,6 @@
             text-align: center;
             margin-top: 4px;
         }
-
-        /* Settings tab */
         .settings-container {
             display: flex;
             flex-direction: column;
@@ -746,8 +731,6 @@
         .settings-card .save-btn:hover {
             opacity: 0.85;
         }
-
-        /* Admin panel */
         .admin-panel {
             background: var(--bg);
             border-radius: var(--radius);
@@ -798,8 +781,6 @@
             background: var(--green);
             color: #fff;
         }
-
-        /* Scrollbar */
         .tab-content::-webkit-scrollbar,
         .chat-messages::-webkit-scrollbar,
         .game-history::-webkit-scrollbar {
@@ -816,8 +797,6 @@
             background: var(--border);
             border-radius: 4px;
         }
-
-        /* Responsive */
         @media (max-width: 500px) {
             #app {
                 max-height: 100vh;
@@ -840,7 +819,6 @@
                 font-size: 18px;
             }
         }
-
         .toast {
             position: fixed;
             bottom: 80px;
@@ -876,7 +854,6 @@
                 transform: translateX(-50%) translateY(0);
             }
         }
-
         .loading-spinner {
             border: 3px solid var(--border);
             border-top-color: var(--accent);
@@ -1093,7 +1070,7 @@
         // =====================================================================
         //  CONFIG
         // =====================================================================
-        const SUPABASE_URL = 'https://your-project.supabase.co'; // <-- استبدل
+        const SUPABASE_URL = 'https://your-project.supabase.co'; // <-- استبدل برابط مشروعك
         const SUPABASE_ANON_KEY = 'sb_publishable_9cQ59wQ3cK6K6bjrLVHxCw_DWuu4uZl';
         const POLYGON_RPC = 'https://polygon-rpc.com';
         const ADMIN_EMAIL = 'youcanuseoneold@gmail.com';
@@ -1113,14 +1090,14 @@
         const MSG_COOLDOWN = 5000;
 
         // =====================================================================
-        //  SUPABASE CLIENT
+        //  SUPABASE CLIENT - تم تغيير الاسم إلى supabaseClient
         // =====================================================================
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // =====================================================================
         //  STATE
         // =====================================================================
-        let currentUser = null; // { id, email, public_address, balance, referral_code, is_admin, ... }
+        let currentUser = null;
         let currentRoom = null;
         let currentRoomId = null;
         let messages = [];
@@ -1128,13 +1105,13 @@
             round: 0,
             result: null,
             timer: GAME_ROUND_SECONDS,
-            bets: {}, // fruitId -> { total, users: { userId: amount } }
+            bets: {},
             history: [],
             spinning: false,
             roundActive: false,
         };
         let encryptedPrivateKey = null;
-        let decryptedPrivateKey = null; // kept in memory
+        let decryptedPrivateKey = null;
         let chatCooldown = false;
         let gameInterval = null;
         let timerInterval = null;
@@ -1220,7 +1197,7 @@
         function getFruitById(id) { return FRUITS.find(f => f.id === id); }
 
         // =====================================================================
-        //  ENCRYPTION (using Web Crypto)
+        //  ENCRYPTION
         // =====================================================================
         async function deriveKey(password, salt) {
             const enc = new TextEncoder();
@@ -1327,7 +1304,7 @@
         });
 
         async function handleLogin(email, password) {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) throw new Error(error.message);
             await loadUserData(password);
             showApp();
@@ -1337,16 +1314,13 @@
         }
 
         async function handleRegister(email, password) {
-            // Check if user exists
-            const { data: existing } = await supabase.from('profiles').select('id').eq('email', email).maybeSingle();
+            const { data: existing } = await supabaseClient.from('profiles').select('id').eq('email', email).maybeSingle();
             if (existing) throw new Error('البريد الإلكتروني مستخدم بالفعل');
 
-            // Create wallet
             const wallet = await createWallet();
             const encrypted = await encryptPrivateKey(wallet.privateKey, password);
 
-            // Register with Supabase
-            const { data: authData, error: authError } = await supabase.auth.signUp({
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                 email,
                 password,
                 options: { data: { public_address: wallet.address } }
@@ -1357,8 +1331,7 @@
             const refCode = generateRefCode();
             const referredBy = getRefCode();
 
-            // Create profile
-            const { error: profileError } = await supabase.from('profiles').insert({
+            const { error: profileError } = await supabaseClient.from('profiles').insert({
                 id: userId,
                 email,
                 public_address: wallet.address,
@@ -1373,15 +1346,14 @@
             });
             if (profileError) throw new Error(profileError.message);
 
-            // Handle referral bonus
             if (referredBy) {
-                const { data: referrer } = await supabase.from('profiles').select('id, balance')
+                const { data: referrer } = await supabaseClient.from('profiles').select('id, balance')
                     .eq('referral_code', referredBy).single();
                 if (referrer) {
-                    await supabase.from('profiles').update({
+                    await supabaseClient.from('profiles').update({
                         balance: referrer.balance + 3
                     }).eq('id', referrer.id);
-                    await supabase.from('referrals').insert({
+                    await supabaseClient.from('referrals').insert({
                         referrer_id: referrer.id,
                         referred_id: userId,
                         bonus_amount: 3,
@@ -1389,7 +1361,6 @@
                 }
             }
 
-            // Auto-login
             await loadUserData(password);
             showApp();
             toast('تم إنشاء الحساب بنجاح! 🎉 رصيدك 10 POL', 'success');
@@ -1398,10 +1369,10 @@
         }
 
         async function loadUserData(password) {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) throw new Error('لم يتم العثور على المستخدم');
 
-            const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+            const { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             if (error) throw new Error(error.message);
 
             currentUser = {
@@ -1426,7 +1397,6 @@
                 }
             }
 
-            // Check ban
             if (currentUser.is_banned) {
                 const expires = currentUser.ban_expires;
                 if (expires && new Date(expires) > new Date()) {
@@ -1445,7 +1415,7 @@
 
         async function updateUserProfile(data) {
             if (!currentUser) return;
-            const { error } = await supabase.from('profiles').update(data).eq('id', currentUser.id);
+            const { error } = await supabaseClient.from('profiles').update(data).eq('id', currentUser.id);
             if (error) throw new Error(error.message);
             Object.assign(currentUser, data);
             updateUI();
@@ -1458,7 +1428,6 @@
             authScreen.style.display = 'none';
             mainApp.style.display = 'flex';
             mainApp.classList.remove('hidden');
-            // Show admin panel
             if (currentUser && currentUser.is_admin) {
                 adminPanel.classList.remove('hidden');
             } else {
@@ -1515,10 +1484,9 @@
         //  CHAT
         // =====================================================================
         async function loadRooms() {
-            const { data, error } = await supabase.from('chat_rooms').select('*').order('created_at', { ascending: true });
+            const { data, error } = await supabaseClient.from('chat_rooms').select('*').order('created_at', { ascending: true });
             if (error) { toast('خطأ في تحميل الغرف', 'error'); return; }
             if (!data || data.length === 0) {
-                // Create default room
                 await createRoom('الغرفة العامة');
                 return loadRooms();
             }
@@ -1540,7 +1508,6 @@
                 btn.addEventListener('click', () => switchRoom(room.id));
                 roomSelector.appendChild(btn);
             });
-            // Admin create button
             if (currentUser && currentUser.is_admin) {
                 const btn = document.createElement('button');
                 btn.className = 'room-btn admin-create';
@@ -1555,7 +1522,7 @@
 
         async function createRoom(name) {
             if (!currentUser) return;
-            const { data, error } = await supabase.from('chat_rooms').insert({
+            const { data, error } = await supabaseClient.from('chat_rooms').insert({
                 name: name.trim(),
                 created_by: currentUser.id,
             }).select().single();
@@ -1568,14 +1535,13 @@
         async function switchRoom(roomId) {
             if (roomId === currentRoomId) return;
             currentRoomId = roomId;
-            currentRoom = (await supabase.from('chat_rooms').select('*').eq('id', roomId).single()).data;
+            currentRoom = (await supabaseClient.from('chat_rooms').select('*').eq('id', roomId).single()).data;
             document.querySelectorAll('.room-btn').forEach(el => {
                 el.classList.toggle('active', el.dataset.roomId === roomId);
             });
             await loadMessages(roomId);
-            // Update room stats
             if (currentUser) {
-                await supabase.from('user_room_stats').upsert({
+                await supabaseClient.from('user_room_stats').upsert({
                     user_id: currentUser.id,
                     room_id: roomId,
                     last_joined: new Date().toISOString(),
@@ -1584,7 +1550,7 @@
         }
 
         async function loadMessages(roomId) {
-            const { data, error } = await supabase.from('messages')
+            const { data, error } = await supabaseClient.from('messages')
                 .select('*, profiles(username, is_admin)')
                 .eq('room_id', roomId)
                 .order('created_at', { ascending: true })
@@ -1592,11 +1558,10 @@
             if (error) { toast('خطأ في تحميل الرسائل', 'error'); return; }
             messages = data || [];
             renderMessages();
-            // Subscribe to new messages
             if (window._msgSub) {
-                supabase.removeChannel(window._msgSub);
+                supabaseClient.removeChannel(window._msgSub);
             }
-            window._msgSub = supabase
+            window._msgSub = supabaseClient
                 .channel('messages_' + roomId)
                 .on('postgres_changes', {
                     event: 'INSERT',
@@ -1657,7 +1622,7 @@
             if (chatCooldown) { toast('⏱ انتظر 5 ثوان بين الرسائل', 'error'); return; }
             if (!currentRoomId) { toast('اختر غرفة أولاً', 'error'); return; }
 
-            const { error } = await supabase.from('messages').insert({
+            const { error } = await supabaseClient.from('messages').insert({
                 room_id: currentRoomId,
                 user_id: currentUser.id,
                 content: text,
@@ -1676,7 +1641,7 @@
         //  GAME
         // =====================================================================
         async function loadGameState() {
-            const { data, error } = await supabase.from('game_rounds')
+            const { data, error } = await supabaseClient.from('game_rounds')
                 .select('*')
                 .eq('completed', false)
                 .order('created_at', { ascending: false })
@@ -1689,8 +1654,7 @@
                 gameState.timer = Math.max(0, GAME_ROUND_SECONDS - (Date.now() - new Date(round.created_at).getTime()) /
                     1000);
                 gameState.roundActive = !round.completed;
-                // Load bets for this round
-                const { data: bets } = await supabase.from('bets')
+                const { data: bets } = await supabaseClient.from('bets')
                     .select('*')
                     .eq('round', round.round_number);
                 if (bets) {
@@ -1706,7 +1670,6 @@
                     await loadGameHistory();
                 }
             } else {
-                // Start first round
                 await startNewRound();
             }
             renderGame();
@@ -1714,7 +1677,7 @@
 
         async function startNewRound() {
             const roundNum = (gameState.round || 0) + 1;
-            const { data, error } = await supabase.from('game_rounds').insert({
+            const { data, error } = await supabaseClient.from('game_rounds').insert({
                 round_number: roundNum,
                 result: null,
                 total_bets: 0,
@@ -1735,12 +1698,10 @@
             if (gameInterval) clearInterval(gameInterval);
             gameInterval = setInterval(async () => {
                 if (!currentUser) return;
-                // Check if round is complete
                 if (gameState.timer <= 0 && gameState.roundActive) {
                     await endRound();
                 }
-                // Sync bets from DB
-                const { data: bets } = await supabase.from('bets')
+                const { data: bets } = await supabaseClient.from('bets')
                     .select('*')
                     .eq('round', gameState.round);
                 if (bets) {
@@ -1775,7 +1736,6 @@
             gameState.spinning = true;
             renderGame();
 
-            // Calculate result: choose fruit with minimum total bets (house wins)
             let minFruit = null;
             let minTotal = Infinity;
             for (const [fruitId, data] of Object.entries(gameState.bets)) {
@@ -1784,7 +1744,6 @@
                     minFruit = fruitId;
                 }
             }
-            // If no bets, pick random
             if (!minFruit) {
                 minFruit = FRUITS[Math.floor(Math.random() * FRUITS.length)].id;
             }
@@ -1792,33 +1751,28 @@
             const winningFruit = minFruit;
             gameState.result = winningFruit;
 
-            // Process payouts: winners get 2x their bet
             const winners = gameState.bets[winningFruit]?.users || {};
             let totalPayout = 0;
             for (const [userId, amount] of Object.entries(winners)) {
                 const payout = amount * 2;
                 totalPayout += payout;
-                // Update user balance
-                const { data: user } = await supabase.from('profiles').select('balance').eq('id', userId).single();
+                const { data: user } = await supabaseClient.from('profiles').select('balance').eq('id', userId).single();
                 if (user) {
-                    await supabase.from('profiles').update({
-                        balance: (user.balance || 0) + payout - amount // they get their bet back + profit
+                    await supabaseClient.from('profiles').update({
+                        balance: (user.balance || 0) + payout - amount
                     }).eq('id', userId);
                 }
-                // Record win
-                await supabase.from('bets').update({ won: true, payout: payout }).eq('user_id', userId).eq('round', gameState
+                await supabaseClient.from('bets').update({ won: true, payout: payout }).eq('user_id', userId).eq('round', gameState
                     .round);
             }
 
-            // Update round as completed
-            await supabase.from('game_rounds').update({
+            await supabaseClient.from('game_rounds').update({
                 result: winningFruit,
                 completed: true,
                 total_bets: Object.values(gameState.bets).reduce((s, d) => s + d.total, 0),
                 ended_at: new Date().toISOString(),
             }).eq('round_number', gameState.round);
 
-            // Show result
             const fruitEmoji = getFruitById(winningFruit)?.emoji || '🎡';
             gameResult.innerHTML = `
             <div class="big-emoji">${fruitEmoji}</div>
@@ -1826,7 +1780,6 @@
             <div class="text-dim" style="font-size:12px;">تم توزيع ${totalPayout.toFixed(2)} POL على الفائزين</div>
           `;
 
-            // Add to history
             gameState.history.unshift({
                 round: gameState.round,
                 result: winningFruit,
@@ -1836,23 +1789,20 @@
             if (gameState.history.length > 20) gameState.history.pop();
             renderGameHistory();
 
-            // Update current user balance
             if (currentUser) {
-                const { data: updated } = await supabase.from('profiles').select('balance').eq('id', currentUser.id)
+                const { data: updated } = await supabaseClient.from('profiles').select('balance').eq('id', currentUser.id)
                     .single();
                 if (updated) currentUser.balance = updated.balance;
                 updateUI();
             }
 
             gameState.spinning = false;
-            // Start next round after delay
             setTimeout(() => {
                 startNewRound();
             }, 5000);
         }
 
         function renderGame() {
-            // Render fruit buttons with bet info
             fruitBets.innerHTML = '';
             FRUITS.forEach(fruit => {
                 const btn = document.createElement('button');
@@ -1866,7 +1816,6 @@
               <span class="bet-count">${betData.total.toFixed(1)} POL</span>
             `;
                 btn.addEventListener('click', () => {
-                    // Select this fruit for betting
                     document.querySelectorAll('.fruit-btn').forEach(el => el.classList.remove('selected'));
                     btn.classList.add('selected');
                     betAmount.focus();
@@ -1874,11 +1823,9 @@
                 fruitBets.appendChild(btn);
             });
 
-            // Update round info
             roundNum.textContent = 'الدورة #' + gameState.round;
             gameTimer.textContent = '⏱ ' + Math.ceil(gameState.timer) + 's';
 
-            // Update result display if not spinning and not active
             if (!gameState.roundActive && gameState.result && !gameState.spinning) {
                 const fruit = getFruitById(gameState.result);
                 if (fruit) {
@@ -1893,7 +1840,6 @@
                 gameResult.innerHTML = `<span class="text-dim">ضع رهانك وانتظر النتيجة...</span>`;
             }
 
-            // Update bet button
             const hasBet = Object.values(gameState.bets).some(d => d.users[currentUser?.id]);
             placeBetBtn.disabled = !gameState.roundActive || gameState.spinning || hasBet || !currentUser || currentUser
                 .is_banned;
@@ -1921,7 +1867,6 @@
             });
         }
 
-        // Place bet
         placeBetBtn.addEventListener('click', placeBet);
 
         async function placeBet() {
@@ -1930,8 +1875,7 @@
             if (!gameState.roundActive) { toast('⏳ انتظر الدورة القادمة', 'error'); return; }
             if (gameState.spinning) { toast('🔄 جاري الدوران', 'error'); return; }
 
-            // Check if already bet this round
-            const { data: existing } = await supabase.from('bets')
+            const { data: existing } = await supabaseClient.from('bets')
                 .select('id')
                 .eq('user_id', currentUser.id)
                 .eq('round', gameState.round)
@@ -1943,21 +1887,18 @@
             if (amount > MAX_BET) { toast('الحد الأقصى للرهان ' + MAX_BET + ' POL', 'error'); return; }
             if (amount > (currentUser.balance || 0)) { toast('رصيد غير كافٍ', 'error'); return; }
 
-            // Get selected fruit
             const selected = document.querySelector('.fruit-btn.selected');
             if (!selected) { toast('اختر فاكهة للرهان عليها', 'error'); return; }
             const fruitId = FRUITS.find(f => f.label === selected.textContent.trim().split(' ')[0])?.id;
             if (!fruitId) { toast('اختر فاكهة صحيحة', 'error'); return; }
 
-            // Deduct balance
-            await supabase.from('profiles').update({
+            await supabaseClient.from('profiles').update({
                 balance: (currentUser.balance || 0) - amount
             }).eq('id', currentUser.id);
             currentUser.balance -= amount;
             updateUI();
 
-            // Record bet
-            const { error } = await supabase.from('bets').insert({
+            const { error } = await supabaseClient.from('bets').insert({
                 user_id: currentUser.id,
                 amount: amount,
                 choice: fruitId,
@@ -1967,8 +1908,7 @@
                 payout: 0,
             });
             if (error) {
-                // Rollback
-                await supabase.from('profiles').update({
+                await supabaseClient.from('profiles').update({
                     balance: (currentUser.balance || 0) + amount
                 }).eq('id', currentUser.id);
                 currentUser.balance += amount;
@@ -1977,7 +1917,6 @@
                 return;
             }
 
-            // Update local state
             if (!gameState.bets[fruitId]) gameState.bets[fruitId] = { total: 0, users: {} };
             gameState.bets[fruitId].total += amount;
             gameState.bets[fruitId].users[currentUser.id] = (gameState.bets[fruitId].users[currentUser.id] || 0) + amount;
@@ -2009,7 +1948,6 @@
             }
 
             try {
-                // Send POL transaction
                 const provider = new ethers.providers.JsonRpcProvider(POLYGON_RPC);
                 const wallet = new ethers.Wallet(decryptedPrivateKey, provider);
                 const tx = await wallet.sendTransaction({
@@ -2019,15 +1957,13 @@
                 });
                 await tx.wait();
 
-                // Update balance
-                await supabase.from('profiles').update({
+                await supabaseClient.from('profiles').update({
                     balance: (currentUser.balance || 0) - amount
                 }).eq('id', currentUser.id);
                 currentUser.balance -= amount;
                 updateUI();
 
-                // Record withdrawal
-                await supabase.from('withdrawals').insert({
+                await supabaseClient.from('withdrawals').insert({
                     user_id: currentUser.id,
                     amount: amount,
                     address: address,
@@ -2051,16 +1987,15 @@
             const confirm = confirmPassword.value;
             if (!pwd || pwd.length < 6) { toast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error'); return; }
             if (pwd !== confirm) { toast('كلمة المرور غير متطابقة', 'error'); return; }
-            const { error } = await supabase.auth.updateUser({ password: pwd });
+            const { error } = await supabaseClient.auth.updateUser({ password: pwd });
             if (error) { toast('خطأ: ' + error.message, 'error'); return; }
             toast('تم تغيير كلمة المرور بنجاح', 'success');
             newPassword.value = '';
             confirmPassword.value = '';
-            // Re-encrypt private key with new password
             if (decryptedPrivateKey) {
                 try {
                     const encrypted = await encryptPrivateKey(decryptedPrivateKey, pwd);
-                    await supabase.from('profiles').update({
+                    await supabaseClient.from('profiles').update({
                         encrypted_private_key: encrypted
                     }).eq('id', currentUser.id);
                     encryptedPrivateKey = encrypted;
@@ -2076,7 +2011,6 @@
             navigator.clipboard?.writeText(text).then(() => {
                 toast('تم نسخ رابط الإحالة 📋', 'success');
             }).catch(() => {
-                // Fallback
                 const ta = document.createElement('textarea');
                 ta.value = text;
                 document.body.appendChild(ta);
@@ -2104,16 +2038,16 @@
             const isPermanent = type === 'perm';
             const expires = isPermanent ? null : new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
 
-            const { data: target } = await supabase.from('profiles').select('id').eq('email', email).single();
+            const { data: target } = await supabaseClient.from('profiles').select('id').eq('email', email).single();
             if (!target) { toast('المستخدم غير موجود', 'error'); return; }
             if (target.id === currentUser.id) { toast('لا يمكن حظر نفسك', 'error'); return; }
 
-            await supabase.from('profiles').update({
+            await supabaseClient.from('profiles').update({
                 is_banned: true,
                 ban_expires: expires,
             }).eq('id', target.id);
 
-            await supabase.from('bans').insert({
+            await supabaseClient.from('bans').insert({
                 user_id: target.id,
                 banned_by: currentUser.id,
                 reason: isPermanent ? 'حظر نهائي' : 'حظر مؤقت 4 ساعات',
@@ -2129,23 +2063,19 @@
             if (!currentUser || !currentUser.is_admin) return;
             if (!confirm('توزيع الأرباح على المستخدمين حسب مدة التواجد؟')) return;
 
-            // Get all users with room stats
-            const { data: stats } = await supabase.from('user_room_stats')
+            const { data: stats } = await supabaseClient.from('user_room_stats')
                 .select('user_id, total_seconds, profiles(balance)')
                 .gt('total_seconds', 0);
 
             if (!stats || stats.length === 0) { toast('لا يوجد مستخدمين نشطين', 'error'); return; }
 
-            // Calculate total seconds
             const totalSeconds = stats.reduce((s, r) => s + (r.total_seconds || 0), 0);
             if (totalSeconds < 10) { toast('مدة التواجد قليلة جداً', 'error'); return; }
 
-            // Get house balance (admin balance)
-            const { data: adminData } = await supabase.from('profiles').select('balance').eq('id', currentUser.id).single();
+            const { data: adminData } = await supabaseClient.from('profiles').select('balance').eq('id', currentUser.id).single();
             const houseBalance = adminData?.balance || 0;
             if (houseBalance < 1) { toast('الصندوق فارغ', 'error'); return; }
 
-            // Distribute 80% of house balance
             const pool = houseBalance * 0.8;
             let distributed = 0;
 
@@ -2154,17 +2084,16 @@
                 const share = pool * ratio;
                 if (share < 0.01) continue;
                 const userId = stat.user_id;
-                const { data: user } = await supabase.from('profiles').select('balance').eq('id', userId).single();
+                const { data: user } = await supabaseClient.from('profiles').select('balance').eq('id', userId).single();
                 if (user) {
-                    await supabase.from('profiles').update({
+                    await supabaseClient.from('profiles').update({
                         balance: (user.balance || 0) + share
                     }).eq('id', userId);
                     distributed += share;
                 }
             }
 
-            // Deduct from house
-            await supabase.from('profiles').update({
+            await supabaseClient.from('profiles').update({
                 balance: houseBalance - distributed
             }).eq('id', currentUser.id);
             currentUser.balance = houseBalance - distributed;
@@ -2202,7 +2131,7 @@
                 });
                 await tx.wait();
 
-                await supabase.from('profiles').update({
+                await supabaseClient.from('profiles').update({
                     balance: (currentUser.balance || 0) - amount
                 }).eq('id', currentUser.id);
                 currentUser.balance -= amount;
@@ -2217,7 +2146,7 @@
         //  LOGOUT
         // =====================================================================
         logoutBtn.addEventListener('click', async () => {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             decryptedPrivateKey = null;
             currentUser = null;
             location.reload();
@@ -2233,7 +2162,6 @@
                 tab.classList.add('active');
                 const target = document.getElementById(tab.dataset.tab);
                 if (target) target.classList.add('active');
-                // Refresh wallet data when switching to wallet tab
                 if (tab.dataset.tab === 'tabWallet') {
                     updateUI();
                     updateWalletUsd();
@@ -2248,34 +2176,30 @@
         //  INIT
         // =====================================================================
         async function init() {
-            // Check for referral code
             const ref = getRefCode();
             if (ref) {
                 referralBadge.classList.remove('hidden');
                 referralBadge.textContent = '🎁 تمت الإحالة! ستحصل على 3 POL عند التسجيل';
             }
 
-            // Check session
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 try {
                     await loadUserData(null);
                     showApp();
                 } catch (e) {
                     toast('خطأ في استعادة الجلسة', 'error');
-                    await supabase.auth.signOut();
+                    await supabaseClient.auth.signOut();
                 }
             }
         }
 
-        // Also listen for auth changes
-        supabase.auth.onAuthStateChange((event, session) => {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_OUT') {
                 location.reload();
             }
         });
 
-        // Draw wheel
         function drawWheel() {
             const canvas = wheelCanvas;
             const ctx = canvas.getContext('2d');
@@ -2292,7 +2216,6 @@
             ctx.clearRect(0, 0, size, size);
             const colors = ['#e74c3c', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#e67e22'];
 
-            // Determine rotation: if there's a result, highlight it
             let startAngle = 0;
             if (gameState.result) {
                 const idx = FRUITS.findIndex(f => f.id === gameState.result);
@@ -2314,7 +2237,6 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Label
                 const midAngle = angle + angleStep / 2;
                 const tx = cx + r * 0.65 * Math.cos(midAngle);
                 const ty = cy + r * 0.65 * Math.sin(midAngle);
@@ -2326,7 +2248,6 @@
                 ctx.shadowBlur = 6;
                 ctx.fillText(FRUITS[i].emoji, tx, ty);
                 ctx.shadowBlur = 0;
-                // Label text
                 const lx = cx + r * 0.88 * Math.cos(midAngle);
                 const ly = cy + r * 0.88 * Math.sin(midAngle);
                 ctx.fillStyle = '#fff';
@@ -2336,7 +2257,6 @@
                 ctx.fillText(FRUITS[i].label, lx, ly);
             }
 
-            // Center circle
             ctx.beginPath();
             ctx.arc(cx, cy, size * 0.08, 0, 2 * Math.PI);
             ctx.fillStyle = '#1a1a2e';
@@ -2345,7 +2265,6 @@
             ctx.lineWidth = 3;
             ctx.stroke();
 
-            // Outer ring glow
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, 2 * Math.PI);
             ctx.strokeStyle = 'rgba(253,203,110,0.3)';
@@ -2353,30 +2272,21 @@
             ctx.stroke();
         }
 
-        // Resize observer for wheel
         const ro = new ResizeObserver(() => drawWheel());
         const wheelWrapper = document.querySelector('.wheel-wrapper');
         if (wheelWrapper) ro.observe(wheelWrapper);
-
-        // Redraw wheel periodically
         setInterval(drawWheel, 2000);
 
-        // =====================================================================
-        //  START
-        // =====================================================================
         init().catch(console.error);
 
-        // Also draw wheel on load
         window.addEventListener('load', () => {
             setTimeout(drawWheel, 500);
-            // Check if we need to show auth
             if (!currentUser) {
                 mainApp.style.display = 'none';
                 authScreen.style.display = 'flex';
             }
         });
 
-        // Handle visibility change to keep game running
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) return;
             drawWheel();
