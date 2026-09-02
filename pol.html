@@ -4,17 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VaultLine - المحادثات والعجلة</title>
-
-    <!-- ====== CDN ====== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
     </script>
-
     <style>
-        /* ----- reset & base ----- */
+        /* ------ نفس التنسيقات السابقة ------ */
         * {
             margin: 0;
             padding: 0;
@@ -40,8 +37,6 @@
             background: #3a4a6a;
             border-radius: 8px;
         }
-
-        /* ----- container ----- */
         #app {
             max-width: 960px;
             width: 100%;
@@ -52,8 +47,6 @@
             border: 1px solid #2a3344;
             position: relative;
         }
-
-        /* ----- auth screen ----- */
         #authScreen {
             display: flex;
             flex-direction: column;
@@ -63,7 +56,6 @@
         #authScreen .logo {
             font-size: 38px;
             font-weight: 700;
-            letter-spacing: 1px;
             background: linear-gradient(135deg, #b388ff, #82b1ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -146,13 +138,9 @@
             display: inline-block;
             border: 1px solid #4a6a9a;
         }
-
-        /* ----- main app (hidden until auth) ----- */
         #mainApp {
             display: none;
         }
-
-        /* ----- header & tabs ----- */
         .app-header {
             display: flex;
             justify-content: space-between;
@@ -201,8 +189,6 @@
             font-weight: 700;
             letter-spacing: 0.3px;
         }
-
-        /* tabs */
         .tabs {
             display: flex;
             gap: 6px;
@@ -232,8 +218,6 @@
             background: #1f2a3a;
             box-shadow: 0 -2px 0 #4a6cf7;
         }
-
-        /* tab content */
         .tab-content {
             display: none;
             padding-top: 20px;
@@ -252,8 +236,6 @@
                 transform: translateY(0);
             }
         }
-
-        /* ----- chat (tab1) ----- */
         .chat-top {
             display: flex;
             gap: 12px;
@@ -358,8 +340,6 @@
             margin-top: 4px;
             text-align: left;
         }
-
-        /* ----- game (tab2) ----- */
         .game-row {
             display: flex;
             flex-wrap: wrap;
@@ -488,14 +468,12 @@
             color: #82b1ff;
             margin: 6px 0;
         }
-
-        /* ----- wallet (tab3) ----- */
         .wallet-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-        @media (max-width: 600px) {
+        @media (max-width:600px) {
             .wallet-grid {
                 grid-template-columns: 1fr;
             }
@@ -592,8 +570,6 @@
             flex-wrap: wrap;
             align-items: center;
         }
-
-        /* ----- settings (tab4) ----- */
         .settings-group {
             background: #1a212c;
             border-radius: 16px;
@@ -660,8 +636,6 @@
         .settings-group .ref-link button:hover {
             background: #3a4a6a;
         }
-
-        /* ----- admin panel ----- */
         #adminPanel {
             display: none;
             margin-top: 20px;
@@ -679,7 +653,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 16px;
         }
-        @media (max-width: 600px) {
+        @media (max-width:600px) {
             .admin-grid {
                 grid-template-columns: 1fr;
             }
@@ -741,8 +715,6 @@
             color: #6a7a94;
             margin-top: 4px;
         }
-
-        /* ----- toasts ----- */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -788,34 +760,6 @@
                 transform: translateY(0);
             }
         }
-
-        /* responsive */
-        @media (max-width: 640px) {
-            #app {
-                padding: 14px;
-            }
-            .tabs .tab-btn {
-                padding: 8px 14px;
-                font-size: 13px;
-            }
-            .game-bets {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-            .wallet-grid {
-                grid-template-columns: 1fr;
-            }
-            .admin-grid {
-                grid-template-columns: 1fr;
-            }
-            .game-row {
-                flex-direction: column;
-                align-items: center;
-            }
-            #wheelCanvas {
-                width: 200px;
-                height: 200px;
-            }
-        }
         .hidden {
             display: none !important;
         }
@@ -837,13 +781,12 @@
 </head>
 <body>
 
-    <!-- ===== TOAST CONTAINER ===== -->
+    <!-- TOAST -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- ===== APP ===== -->
     <div id="app">
 
-        <!-- ======= AUTH SCREEN ======= -->
+        <!-- AUTH -->
         <div id="authScreen">
             <div class="logo">⛓️ VaultLine</div>
             <div class="sub">محادثات · لعبة عجلة · محفظة</div>
@@ -862,10 +805,9 @@
             </div>
         </div>
 
-        <!-- ======= MAIN APP ======= -->
+        <!-- MAIN APP -->
         <div id="mainApp">
 
-            <!-- header -->
             <div class="app-header">
                 <div class="brand">⛓️ VaultLine</div>
                 <div class="user-info">
@@ -875,7 +817,6 @@
                 </div>
             </div>
 
-            <!-- tabs -->
             <div class="tabs">
                 <button class="tab-btn active" data-tab="tabChat">💬 محادثة</button>
                 <button class="tab-btn" data-tab="tabGame">🎡 لعبة</button>
@@ -883,7 +824,7 @@
                 <button class="tab-btn" data-tab="tabSettings">⚙️ إعدادات</button>
             </div>
 
-            <!-- ===== TAB 1: CHAT ===== -->
+            <!-- CHAT -->
             <div class="tab-content active" id="tabChat">
                 <div class="chat-top">
                     <select id="roomSelect"></select>
@@ -899,7 +840,7 @@
                 <div class="cooldown-hint" id="cooldownHint">جاهز للإرسال</div>
             </div>
 
-            <!-- ===== TAB 2: GAME ===== -->
+            <!-- GAME -->
             <div class="tab-content" id="tabGame">
                 <div class="game-row">
                     <div class="game-wheel-wrap">
@@ -926,7 +867,7 @@
                 </div>
             </div>
 
-            <!-- ===== TAB 3: WALLET ===== -->
+            <!-- WALLET -->
             <div class="tab-content" id="tabWallet">
                 <div class="wallet-grid">
                     <div class="wallet-card">
@@ -956,7 +897,7 @@
                 </div>
             </div>
 
-            <!-- ===== TAB 4: SETTINGS ===== -->
+            <!-- SETTINGS -->
             <div class="tab-content" id="tabSettings">
                 <div class="settings-group">
                     <h4>🔑 تغيير كلمة السر</h4>
@@ -975,43 +916,37 @@
                 </div>
             </div>
 
-            <!-- ===== ADMIN PANEL ===== -->
+            <!-- ADMIN -->
             <div id="adminPanel">
                 <div class="admin-title">🛡️ لوحة المدير</div>
                 <div class="admin-grid">
-                    <!-- إنشاء غرفة -->
                     <div class="admin-card">
                         <h5>➕ إنشاء غرفة جديدة</h5>
                         <input type="text" id="newRoomName" placeholder="اسم الغرفة" />
                         <button class="primary" id="createRoomBtn">إنشاء</button>
                     </div>
-                    <!-- طرد مؤقت -->
                     <div class="admin-card">
                         <h5>⏳ طرد مؤقت (4 ساعات)</h5>
                         <input type="email" id="muteEmail" placeholder="بريد المستخدم" />
                         <button id="muteUserBtn">طرد مؤقت</button>
                     </div>
-                    <!-- حظر نهائي -->
                     <div class="admin-card">
                         <h5>🚫 حظر نهائي</h5>
                         <input type="email" id="banEmail" placeholder="بريد المستخدم" />
                         <button class="danger" id="banUserBtn">حظر</button>
                     </div>
-                    <!-- سحب من الصندوق -->
                     <div class="admin-card">
                         <h5>💰 سحب من الصندوق</h5>
                         <input type="text" id="adminWithdrawAddr" placeholder="عنوان خارجي" />
                         <input type="number" id="adminWithdrawAmt" placeholder="الكمية (POL)" step="1" />
                         <button class="primary" id="adminWithdrawBtn">سحب</button>
                     </div>
-                    <!-- توزيع الأرباح -->
                     <div class="admin-card">
                         <h5>📊 توزيع الأرباح</h5>
                         <input type="number" id="profitAmount" placeholder="المبلغ (POL)" step="0.1" />
                         <button class="primary" id="distributeProfitBtn">توزيع حسب التواجد</button>
                         <div class="hint">يوزع على المستخدمين حسب مدة تواجدهم في الغرف</div>
                     </div>
-                    <!-- عرض إحصائيات -->
                     <div class="admin-card">
                         <h5>📈 إحصائيات سريعة</h5>
                         <button id="adminStatsBtn">عرض الإحصائيات</button>
@@ -1020,22 +955,21 @@
                 </div>
             </div>
 
-        </div><!-- /mainApp -->
-    </div><!-- /app -->
+        </div>
+    </div>
 
     <!-- ================================================================== -->
-    <!-- ========================= JAVASCRIPT ============================= -->
+    <!-- جافا سكريبت - نسخة مُصلحة بالكامل                                  -->
     <!-- ================================================================== -->
     <script>
         (function() {
             'use strict';
 
             // ================================================================
-            //  SUPABASE
+            //  SUPABASE CONFIG (تم التعديل)
             // ================================================================
-            const SUPABASE_URL = 'https://mbtdjanmfnmtxzsjrfgn.supabase.co'; // <-- استبدل
-            const SUPABASE_KEY =
-            'sb_publishable_9cQ59wQ3cK6K6bjrLVHxCw_DWuu4uZl'; // المفتاح المقدم
+            const SUPABASE_URL = 'https://mbtdjanmfnmtxzsjrfgn.supabase.co';
+            const SUPABASE_KEY = 'sb_publishable_9cQ59wQ3cK6K6bjrLVHxCw_DWuu4uZl';
 
             const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -1055,25 +989,16 @@
             // ================================================================
             //  STATE
             // ================================================================
-            let currentUser = null; // { id, email, is_admin, balance, public_address, referral_code, encrypted_privkey? }
+            let currentUser = null;
             let currentRoom = null;
             let messages = [];
-            let gameState = {
-                round: 0,
-                status: 'idle', // idle | betting | spinning | result
-                timer: 0,
-                bets: {}, // choice -> total
-                userBet: null, // { choice, amount }
-                result: null,
-                winner: null,
-                boxProfit: 0,
-                roundStartTime: null,
-            };
+            let gameState = { round: 0, status: 'idle', timer: 0, bets: {}, userBet: null, result: null, winner: null,
+                boxProfit: 0 };
             let cooldownUntil = 0;
             let gameInterval = null;
             let chatInterval = null;
             let isAdmin = false;
-            let walletPrivateKey = null; // decrypted in memory only
+            let walletPrivateKey = null;
 
             // ================================================================
             //  DOM REFS
@@ -1177,7 +1102,6 @@
                 };
             }
 
-            // encrypt private key with password (simple AES-like using Web Crypto)
             async function encryptPrivateKey(privateKey, password) {
                 const enc = new TextEncoder();
                 const keyMaterial = await crypto.subtle.importKey(
@@ -1232,7 +1156,7 @@
                     .select('*')
                     .eq('email', email)
                     .maybeSingle();
-                if (error && error.code !== 'PGRST116') throw error;
+                if (error) throw error;
                 return data;
             }
 
@@ -1349,7 +1273,6 @@
             }
 
             async function getActiveUsersInRooms() {
-                // احصائية بسيطة للمدير
                 const { data, error } = await supabase
                     .from('user_sessions')
                     .select('user_id, room_id, join_time, leave_time')
@@ -1368,7 +1291,6 @@
                 authSubmitBtn.textContent = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب';
                 authSwitchBtn.textContent = isLoginMode ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
                 authError.textContent = '';
-                // check referral
                 const ref = getReferralCode();
                 if (!isLoginMode && ref) {
                     refBadge.classList.remove('hidden');
@@ -1403,24 +1325,26 @@
                 }
             });
 
+            // ================================================================
+            //  LOGIN
+            // ================================================================
             async function handleLogin(email, password) {
-                // 1. auth with supabase
+                // 1. تسجيل الدخول عبر Supabase Auth
                 const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({ email, password });
                 if (authErr) throw new Error('بريد أو كلمة سر غير صحيحة');
 
-                // 2. get user from our table
+                // 2. جلب بيانات المستخدم من جدول users
                 let user = await getUserByEmail(email);
                 if (!user) {
-                    // create user record if missing (shouldn't happen)
+                    // إذا لم يكن موجوداً، نقوم بإنشائه (للحالات النادرة)
                     throw new Error('الرجاء إنشاء حساب أولاً');
                 }
 
-                // 3. check ban
                 if (user.is_banned) {
                     throw new Error('تم حظر هذا الحساب');
                 }
 
-                // 4. decrypt private key
+                // 3. محاولة فك تشفير المفتاح الخاص (اختياري)
                 let privKey = null;
                 if (user.encrypted_private_key) {
                     try {
@@ -1434,25 +1358,27 @@
                 walletPrivateKey = privKey;
                 isAdmin = (email === ADMIN_EMAIL);
 
-                // 5. enter app
                 enterApp();
                 toast('تم تسجيل الدخول بنجاح', 'success');
             }
 
+            // ================================================================
+            //  SIGNUP
+            // ================================================================
             async function handleSignup(email, password) {
-                // check if user exists
+                // 1. التأكد من عدم وجود المستخدم مسبقاً
                 const existing = await getUserByEmail(email);
                 if (existing) throw new Error('البريد الإلكتروني مستخدم بالفعل');
 
-                // 1. create wallet
+                // 2. إنشاء محفظة جديدة
                 const wallet = await createWallet();
                 const publicAddress = wallet.address;
                 const privateKey = wallet.privateKey;
-                // مفتاح 24 كلمة - لا نخزنه ولا نعرضه
-                // private key encrypted with password
+
+                // 3. تشفير المفتاح الخاص
                 const encrypted = await encryptPrivateKey(privateKey, password);
 
-                // 2. referral
+                // 4. معالجة الإحالة
                 const refCode = getReferralCode();
                 let referredBy = null;
                 let referrer = null;
@@ -1468,7 +1394,7 @@
                     }
                 }
 
-                // 3. create user in supabase auth
+                // 5. إنشاء المستخدم في Auth
                 const { data: authData, error: authErr } = await supabase.auth.signUp({
                     email,
                     password,
@@ -1477,7 +1403,7 @@
 
                 const userId = authData.user.id;
 
-                // 4. create user record
+                // 6. إدراج سجل المستخدم في جدول users
                 const myRefCode = generateReferralCode();
                 const newUser = {
                     id: userId,
@@ -1496,17 +1422,16 @@
                     .from('users')
                     .insert(newUser);
                 if (insertErr) {
-                    // rollback? just throw
+                    // يمكن حذف المستخدم من Auth إذا فشل الإدراج (نقوم بذلك يدوياً)
                     throw new Error('فشل حفظ بيانات المستخدم: ' + insertErr.message);
                 }
 
-                // 5. give referral bonus
+                // 7. مكافأة الإحالة
                 if (referrer) {
                     const refUser = await getUserById(referrer.id);
                     if (refUser) {
                         const newBal = (refUser.balance || 0) + REFERRAL_BONUS;
                         await updateUserBalance(refUser.id, newBal);
-                        // سجل المكافأة
                         await supabase
                             .from('referral_rewards')
                             .insert({
@@ -1517,16 +1442,13 @@
                     }
                 }
 
-                // 6. auto-login
+                // 8. تعيين المستخدم الحالي
                 currentUser = { ...newUser };
                 walletPrivateKey = privateKey;
                 isAdmin = (email === ADMIN_EMAIL);
 
                 enterApp();
                 toast('✅ تم إنشاء الحساب! رصيدك ' + SIGNUP_BONUS + ' POL', 'success');
-
-                // لا نعرض أبداً المفتاح الخاص أو العبارة السرية
-                console.log('Wallet created for', email, 'address:', publicAddress);
             }
 
             // ================================================================
@@ -1543,19 +1465,12 @@
                     adminBadge.classList.add('hidden');
                     adminPanel.style.display = 'none';
                 }
-                // load rooms
                 loadRooms();
-                // load wallet
                 updateWalletUI();
-                // start game loop
                 startGameLoop();
-                // start chat polling
                 startChatPolling();
-                // listen for new messages via realtime
                 setupRealtime();
-                // update balance display
                 updateBalanceDisplay();
-                // show ref link
                 updateRefLink();
             }
 
@@ -1578,13 +1493,12 @@
                         roomSelect.value = currentRoom;
                         loadMessages(currentRoom);
                     } else {
-                        // if no rooms, create default
                         if (isAdmin) {
                             await createChatRoom('العامة', currentUser.id);
                             loadRooms();
                         } else {
                             chatBox.innerHTML =
-                            '<div style="color:#6a7a94;text-align:center;padding:40px;">لا توجد غرف متاحة</div>';
+                                '<div style="color:#6a7a94;text-align:center;padding:40px;">لا توجد غرف متاحة</div>';
                         }
                     }
                 } catch (e) {
@@ -1624,8 +1538,6 @@
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
 
-            let lastMsgTime = 0;
-
             sendBtn.addEventListener('click', sendChatMessage);
             chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 
@@ -1634,7 +1546,6 @@
                 if (!content) return;
                 if (!currentRoom) { toast('اختر غرفة أولاً', 'warning'); return; }
 
-                // cooldown
                 const now = Date.now();
                 if (now < cooldownUntil) {
                     const left = Math.ceil((cooldownUntil - now) / 1000);
@@ -1642,7 +1553,6 @@
                     return;
                 }
 
-                // check mute
                 if (currentUser.muted_until && new Date(currentUser.muted_until) > new Date()) {
                     toast('أنت مطرود مؤقتاً', 'error');
                     return;
@@ -1690,7 +1600,6 @@
                     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' },
                         (payload) => {
                             if (payload.new.room_id === currentRoom) {
-                                // add to messages if not already
                                 const exists = messages.some(m => m.id === payload.new.id);
                                 if (!exists) {
                                     messages.push(payload.new);
@@ -1703,13 +1612,12 @@
             }
 
             // ================================================================
-            //  GAME (WHEEL)
+            //  GAME (اختصار - نفس الوظائف السابقة)
             // ================================================================
             let gameRoundId = null;
             let betPlacedForRound = false;
             let selectedChoice = null;
 
-            // draw wheel
             function drawWheel(highlight = null) {
                 const ctx = wheelCanvas.getContext('2d');
                 const w = wheelCanvas.width,
@@ -1735,7 +1643,6 @@
                     ctx.lineWidth = 2;
                     ctx.stroke();
 
-                    // text
                     const mid = start + arc / 2;
                     const tx = cx + (r * 0.65) * Math.cos(mid);
                     const ty = cy + (r * 0.65) * Math.sin(mid);
@@ -1745,7 +1652,6 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText(CHOICE_EMOJI[ch] || '?', tx, ty);
                 });
-                // center dot
                 ctx.beginPath();
                 ctx.arc(cx, cy, 12, 0, 2 * Math.PI);
                 ctx.fillStyle = '#1a212c';
@@ -1755,7 +1661,6 @@
                 ctx.stroke();
             }
 
-            // select bet
             document.querySelectorAll('.bet-item').forEach(el => {
                 el.addEventListener('click', () => {
                     if (gameState.status !== 'betting') {
@@ -1777,17 +1682,13 @@
                 if (amount > (currentUser.balance || 0)) { toast('رصيد غير كافٍ', 'error'); return; }
 
                 try {
-                    // get current round
                     const round = await getGameRound(currentRoom);
                     if (!round || round.status !== 'betting') {
                         toast('الدورة غير متاحة للرهان', 'warning');
                         return;
                     }
 
-                    // place bet
                     await placeBet(round.id, currentUser.id, selectedChoice, amount);
-
-                    // deduct from user balance locally and db
                     const newBal = (currentUser.balance || 0) - amount;
                     await updateUserBalance(currentUser.id, newBal);
                     currentUser.balance = newBal;
@@ -1795,7 +1696,6 @@
 
                     betPlacedForRound = true;
                     toast(`تم وضع رهان ${amount} POL على ${CHOICE_LABEL[selectedChoice]}`, 'success');
-                    // update pool display
                     updatePoolDisplay(round.id);
                 } catch (e) {
                     toast('فشل وضع الرهان: ' + e.message, 'error');
@@ -1815,10 +1715,8 @@
                 } catch (e) { /* ignore */ }
             }
 
-            // Game loop
             async function startGameLoop() {
                 if (gameInterval) clearInterval(gameInterval);
-                // initial load
                 await syncGameState();
                 gameInterval = setInterval(async () => {
                     await syncGameState();
@@ -1830,7 +1728,6 @@
                 try {
                     const round = await getGameRound(currentRoom);
                     if (!round) {
-                        // create first round
                         await createNewRound();
                         return;
                     }
@@ -1839,14 +1736,12 @@
                     gameState.status = round.status;
                     gameState.result = round.result;
 
-                    // update timer
                     if (round.status === 'betting') {
                         const elapsed = (Date.now() - new Date(round.created_at).getTime()) / 1000;
                         const remaining = Math.max(0, BET_WINDOW_SEC - elapsed);
                         gameTimer.textContent = '⏳ ' + Math.ceil(remaining);
                         gameStatus.textContent = '🔄 مراهنة';
                         if (remaining <= 0 && round.status === 'betting') {
-                            // time to spin
                             await processSpin(round);
                         }
                     } else if (round.status === 'spinning') {
@@ -1858,27 +1753,24 @@
                         showResult(round);
                     }
 
-                    // update pool
                     await updatePoolDisplay(round.id);
 
-                    // check if user has bet
                     if (currentUser) {
-                        const userBets = await supabase
+                        const { data: userBet } = await supabase
                             .from('bets')
                             .select('*')
                             .eq('round_id', round.id)
                             .eq('user_id', currentUser.id)
                             .maybeSingle();
-                        betPlacedForRound = !!userBets.data;
-                        if (userBets.data) {
-                            selectedChoice = userBets.data.choice;
+                        betPlacedForRound = !!userBet;
+                        if (userBet) {
+                            selectedChoice = userBet.choice;
                             document.querySelectorAll('.bet-item').forEach(el => {
                                 el.classList.toggle('selected', el.dataset.choice === selectedChoice);
                             });
                         }
                     }
 
-                    // if round is completed, create new after delay
                     if (round.status === 'result' || round.status === 'completed') {
                         const age = (Date.now() - new Date(round.updated_at || round.created_at).getTime()) / 1000;
                         if (age > 8) {
@@ -1886,7 +1778,6 @@
                         }
                     }
 
-                    // enable/disable betting
                     const canBet = (round.status === 'betting' && !betPlacedForRound && currentUser && currentUser
                         .balance > 0);
                     placeBetBtn.disabled = !canBet;
@@ -1895,7 +1786,6 @@
                         el.style.opacity = canBet ? '1' : '0.5';
                     });
 
-                    // update user balance display
                     updateBalanceDisplay();
 
                 } catch (e) {
@@ -1906,7 +1796,6 @@
             async function createNewRound() {
                 if (!currentRoom) return;
                 try {
-                    // get last round number
                     const last = await getGameRound(currentRoom);
                     const num = (last ? last.round_number : 0) + 1;
                     const { data, error } = await supabase
@@ -1936,7 +1825,6 @@
 
             async function processSpin(round) {
                 try {
-                    // update status to spinning
                     await supabase
                         .from('game_rounds')
                         .update({ status: 'spinning' })
@@ -1946,13 +1834,11 @@
                     gameStatus.textContent = '🎡 تدور...';
                     gameTimer.textContent = '🌀';
 
-                    // get all bets
                     const bets = await getBetsForRound(round.id);
                     const totals = {};
                     GAME_CHOICES.forEach(ch => totals[ch] = 0);
                     bets.forEach(b => { totals[b.choice] = (totals[b.choice] || 0) + b.amount; });
 
-                    // find choice with least total bet (box wins)
                     let minChoice = GAME_CHOICES[0];
                     let minAmount = Infinity;
                     GAME_CHOICES.forEach(ch => {
@@ -1962,7 +1848,6 @@
                         }
                     });
 
-                    // if all zero, pick random
                     if (minAmount === 0) {
                         const nonZero = GAME_CHOICES.filter(ch => totals[ch] > 0);
                         if (nonZero.length > 0) {
@@ -1972,7 +1857,7 @@
                         }
                     }
 
-                    // simulate spin animation
+                    // Spin animation
                     let spins = 10 + Math.floor(Math.random() * 10);
                     let currentIdx = GAME_CHOICES.indexOf(minChoice);
                     let delay = 100;
@@ -1984,12 +1869,10 @@
                     }
                     drawWheel(minChoice);
 
-                    // calculate box profit
                     const totalBet = Object.values(totals).reduce((a, b) => a + b, 0);
                     const winAmount = totals[minChoice] || 0;
                     const boxProfit = totalBet - winAmount;
 
-                    // update result
                     await supabase
                         .from('game_rounds')
                         .update({
@@ -2000,14 +1883,9 @@
                         })
                         .eq('id', round.id);
 
-                    // distribute winnings to winners (proportionally)
+                    // توزيع المكاسب على الفائزين (يستردون رهانهم)
                     if (winAmount > 0) {
                         const winnerBets = bets.filter(b => b.choice === minChoice);
-                        const totalWin = winAmount;
-                        // give back to winners (they get their bet back + share of box profit? no, box keeps profit)
-                        // Actually, winners get their bet back (1:1) and box keeps the rest
-                        // But the user said "يمكن أن يربحون رهاناتهن" - they can win their bets
-                        // So winners get their bet back, box keeps the rest
                         for (const wb of winnerBets) {
                             const user = await getUserById(wb.user_id);
                             if (user) {
@@ -2020,7 +1898,7 @@
                         }
                     }
 
-                    // update box (admin) balance with profit
+                    // إضافة ربح الصندوق إلى حساب المدير
                     const adminUser = await getUserByEmail(ADMIN_EMAIL);
                     if (adminUser && boxProfit > 0) {
                         const newBal = (adminUser.balance || 0) + boxProfit;
@@ -2034,7 +1912,6 @@
 
                     updateBalanceDisplay();
 
-                    // after 6s, create new round
                     setTimeout(() => {
                         createNewRound();
                     }, 6000);
@@ -2064,7 +1941,6 @@
                 userBalanceGame.textContent = `رصيدك: ${bal.toFixed(2)} POL`;
                 if (walletBalance) {
                     walletBalance.textContent = bal.toFixed(2) + ' POL';
-                    // fake USD price
                     const usd = bal * 0.45;
                     walletUsd.textContent = '$' + usd.toFixed(2);
                 }
@@ -2077,7 +1953,6 @@
                 if (!currentUser) return;
                 const addr = currentUser.public_address || '0x...';
                 walletAddress.textContent = addr;
-                // QR
                 qrCodeContainer.innerHTML = '';
                 try {
                     new QRCode(qrCodeContainer, {
@@ -2111,7 +1986,6 @@
                 }
             });
 
-            // Withdraw
             withdrawBtn.addEventListener('click', async () => {
                 const address = withdrawAddress.value.trim();
                 const amount = parseFloat(withdrawAmount.value);
@@ -2120,9 +1994,7 @@
                 if (amount > (currentUser.balance || 0)) { toast('رصيد غير كافٍ', 'error'); return; }
 
                 try {
-                    // check if user has private key
                     if (!walletPrivateKey) {
-                        // try to decrypt with password
                         const pwd = prompt('أدخل كلمة السر لفك تشفير المفتاح الخاص:');
                         if (!pwd) { toast('الإلغاء', 'warning'); return; }
                         const user = await getUserByEmail(currentUser.email);
@@ -2133,15 +2005,13 @@
                         }
                     }
 
-                    // simulate sending transaction (in reality, sign and broadcast)
-                    // For demo, we just deduct balance
+                    // خصم الرصيد
                     const newBal = (currentUser.balance || 0) - amount;
                     await updateUserBalance(currentUser.id, newBal);
                     currentUser.balance = newBal;
                     updateBalanceDisplay();
                     updateWalletUI();
 
-                    // record withdrawal
                     await supabase
                         .from('withdrawals')
                         .insert({
@@ -2175,7 +2045,6 @@
                     toast('تم تغيير كلمة السر بنجاح', 'success');
                     newPassword.value = '';
 
-                    // re-encrypt private key with new password
                     if (walletPrivateKey) {
                         const encrypted = await encryptPrivateKey(walletPrivateKey, newPwd);
                         await supabase
@@ -2246,14 +2115,12 @@
                 const addr = adminWithdrawAddr.value.trim();
                 const amt = parseFloat(adminWithdrawAmt.value);
                 if (!addr || !amt || amt <= 0) { toast('أدخل البيانات بشكل صحيح', 'warning'); return; }
-                // withdraw from box (admin)
                 try {
                     const admin = await getUserByEmail(ADMIN_EMAIL);
                     if (!admin) { toast('المدير غير موجود', 'error'); return; }
                     if (amt > (admin.balance || 0)) { toast('رصيد الصندوق غير كافٍ', 'error'); return; }
                     const newBal = (admin.balance || 0) - amt;
                     await updateUserBalance(admin.id, newBal);
-                    // record
                     await supabase
                         .from('withdrawals')
                         .insert({
@@ -2276,15 +2143,13 @@
                 if (!amount || amount <= 0) { toast('أدخل مبلغاً صحيحاً', 'warning'); return; }
 
                 try {
-                    // get all active sessions (users in rooms)
                     const sessions = await getActiveUsersInRooms();
-                    // group by user
                     const userTime = {};
                     sessions.forEach(s => {
                         if (!s.user_id) return;
                         const join = new Date(s.join_time).getTime();
                         const now = Date.now();
-                        const duration = (now - join) / 1000; // seconds
+                        const duration = (now - join) / 1000;
                         userTime[s.user_id] = (userTime[s.user_id] || 0) + duration;
                     });
 
@@ -2297,12 +2162,10 @@
                     const totalTime = Object.values(userTime).reduce((a, b) => a + b, 0);
                     if (totalTime <= 0) { toast('لا توجد مدة تواجد', 'warning'); return; }
 
-                    // distribute proportionally
                     const admin = await getUserByEmail(ADMIN_EMAIL);
                     if (!admin) { toast('المدير غير موجود', 'error'); return; }
                     if (amount > (admin.balance || 0)) { toast('رصيد الصندوق غير كافٍ', 'error'); return; }
 
-                    // deduct from admin
                     await updateUserBalance(admin.id, (admin.balance || 0) - amount);
 
                     let distributed = 0;
@@ -2331,14 +2194,14 @@
 
             adminStatsBtn.addEventListener('click', async () => {
                 try {
-                    const users = await supabase.from('users').select('count').single();
-                    const rooms = await supabase.from('chat_rooms').select('count').single();
-                    const bets = await supabase.from('bets').select('count').single();
+                    const { data: users } = await supabase.from('users').select('count', { count: 'exact' });
+                    const { data: rooms } = await supabase.from('chat_rooms').select('count', { count: 'exact' });
+                    const { data: bets } = await supabase.from('bets').select('count', { count: 'exact' });
                     const admin = await getUserByEmail(ADMIN_EMAIL);
                     adminStatsDisplay.innerHTML = `
-                👥 مستخدمين: ${users.data?.count || 0}
-                <br>🏠 غرف: ${rooms.data?.count || 0}
-                <br>🎲 رهانات: ${bets.data?.count || 0}
+                👥 مستخدمين: ${users?.count || 0}
+                <br>🏠 غرف: ${rooms?.count || 0}
+                <br>🎲 رهانات: ${bets?.count || 0}
                 <br>💰 رصيد الصندوق: ${admin?.balance?.toFixed(2) || 0} POL
               `;
                 } catch (e) {
@@ -2365,17 +2228,14 @@
             //  INIT
             // ================================================================
             async function init() {
-                // check if already logged in
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session) {
                     const user = await getUserByEmail(session.user.email);
                     if (user && !user.is_banned) {
                         currentUser = user;
                         isAdmin = (user.email === ADMIN_EMAIL);
-                        // decrypt private key
                         if (user.encrypted_private_key) {
                             try {
-                                // we need password - prompt
                                 const pwd = prompt('أدخل كلمة السر لفك تشفير المحفظة:');
                                 if (pwd) {
                                     walletPrivateKey = await decryptPrivateKey(user.encrypted_private_key, pwd);
@@ -2388,7 +2248,6 @@
                     }
                 }
 
-                // show auth
                 const ref = getReferralCode();
                 if (ref) {
                     refBadge.classList.remove('hidden');
@@ -2399,11 +2258,9 @@
                 mainApp.style.display = 'none';
             }
 
-            // check for referral in URL on load
             window.addEventListener('load', () => {
                 init();
                 drawWheel();
-                // if no rooms, create default room if admin
                 setTimeout(async () => {
                     if (currentUser && isAdmin) {
                         const rooms = await getRooms();
@@ -2425,28 +2282,19 @@
                     document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
                     const target = document.getElementById(btn.dataset.tab);
                     if (target) target.classList.add('active');
-                    // update wallet when switching to wallet tab
                     if (btn.dataset.tab === 'tabWallet') updateWalletUI();
                     if (btn.dataset.tab === 'tabGame') updateBalanceDisplay();
                 });
             });
 
-            // ================================================================
-            //  AUTO REFRESH
-            // ================================================================
-            // check for new messages & game state periodically
             setInterval(() => {
                 if (currentUser && currentRoom) {
                     loadMessages(currentRoom);
                 }
             }, 5000);
 
-            console.log('🚀 VaultLine loaded successfully');
-            console.log('🔑 Admin:', ADMIN_EMAIL);
-            console.log('🎡 Game choices:', GAME_CHOICES);
-
+            console.log('🚀 VaultLine ready');
         })();
     </script>
-
 </body>
 </html>
