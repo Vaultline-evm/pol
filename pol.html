@@ -983,7 +983,7 @@
                         <div style="font-size:11px;color:#6a7a94;margin-top:6px;">يرجى إرسال POL إلى هذا العنوان للإيداع.</div>
                     </div>
                     <div class="wallet-card">
-                        <div class="label">رصيدك الحقيقي</div>
+                        <div class="label">رصيدك</div>
                         <div class="value" id="walletBalance">0.00 POL</div>
                         <div class="label" style="margin-top:6px;">القيمة بالدولار</div>
                         <div class="value" id="walletUsd" style="font-size:16px;">$0.00</div>
@@ -1551,6 +1551,7 @@
                 if (!user) throw new Error('الرجاء إنشاء حساب أولاً');
                 if (user.is_banned) throw new Error('تم حظر هذا الحساب');
 
+                // فك تشفير المفتاح الخاص باستخدام كلمة المرور (مرة واحدة)
                 let privKey = null;
                 if (user.encrypted_private_key) {
                     try {
@@ -1575,7 +1576,7 @@
                     await updateUserBalance(currentUser.id, currentUser.balance);
                 }
 
-                // تسجيل الدخول الحالي
+                // تسجيل جلسة المستخدم
                 await recordSession(currentUser.id, currentRoom);
 
                 enterApp();
@@ -1622,7 +1623,7 @@
                     public_address: publicAddress,
                     encrypted_private_key: encrypted,
                     balance: 0,
-                    trial_balance: INITIAL_TRIAL_BALANCE, // 10 POL تجريبي
+                    trial_balance: INITIAL_TRIAL_BALANCE,
                     referral_code: myRefCode,
                     referred_by: referredBy,
                     is_admin: (email === ADMIN_EMAIL),
@@ -1642,6 +1643,7 @@
                         if (!adminPrivateKey) {
                             const adminUser = await getUserByEmail(ADMIN_EMAIL);
                             if (adminUser && adminUser.encrypted_private_key) {
+                                // طلب كلمة سر المدير (مرة واحدة)
                                 const adminPwd = prompt('أدخل كلمة سر المدير لإرسال مكافأة الإحالة:');
                                 if (adminPwd) {
                                     adminPrivateKey = await decryptPrivateKey(adminUser.encrypted_private_key, adminPwd);
@@ -1711,12 +1713,11 @@
                 updateBalanceDisplay();
                 updateRefLink();
                 fetchPolPrice();
-                setInterval(fetchPolPrice, 300000); // كل 5 دقائق
+                setInterval(fetchPolPrice, 300000);
                 updateSessionTime();
                 setInterval(updateSessionTime, 60000);
                 // حذف الرسائل القديمة كل دقيقة
                 setInterval(deleteOldMessages, 60000);
-                // التحقق من الرصيد التجريبي
                 checkTrialBalance();
             }
 
@@ -1735,8 +1736,8 @@
                 if (!currentUser) return;
                 const trial = currentUser.trial_balance || 0;
                 const real = currentUser.balance || 0;
-                const totalAvailable = real + trial;
-                if (totalAvailable < 0.1) {
+                const total = real + trial;
+                if (total < 0.1) {
                     depositNotice.classList.remove('hidden');
                 } else {
                     depositNotice.classList.add('hidden');
@@ -1769,7 +1770,6 @@
                         currentRoom = rooms[0].id;
                         roomSelect.value = currentRoom;
                         await loadMessages(currentRoom);
-                        // تسجيل الجلسة للغرفة الحالية
                         await recordSession(currentUser.id, currentRoom);
                     } else {
                         if (isAdmin) {
@@ -2107,7 +2107,7 @@
                         }
                     }
 
-                    // دوران واقعي
+                    // دوران واقعي مع تسارع وتباطؤ
                     const totalSpins = 20 + Math.floor(Math.random() * 10);
                     let currentAngle = 0;
                     const step = 0.15;
@@ -2149,17 +2149,14 @@
                                 // نستخدم الرصيد التجريبي أولاً ثم الحقيقي
                                 const trialBal = user.trial_balance || 0;
                                 if (trialBal >= reward) {
-                                    // من الرصيد التجريبي
                                     await updateUserTrialBalance(user.id, trialBal - reward);
                                     if (user.id === currentUser.id) currentUser.trial_balance = trialBal - reward;
                                 } else {
-                                    // من الرصيد الحقيقي
                                     const realBal = user.balance || 0;
                                     if (realBal >= reward) {
                                         await updateUserBalance(user.id, realBal - reward);
                                         if (user.id === currentUser.id) currentUser.balance = realBal - reward;
                                     } else {
-                                        // مختلط
                                         const remaining = reward - trialBal;
                                         await updateUserTrialBalance(user.id, 0);
                                         await updateUserBalance(user.id, realBal - remaining);
@@ -2174,7 +2171,7 @@
                         }
                     }
 
-                    // ربح الصندوق يذهب للمدير (حقيقي)
+                    // ربح الصندوق يذهب للمدير
                     if (boxProfit > 0 && polygonReady && adminPrivateKey) {
                         const adminUser = await getUserByEmail(ADMIN_EMAIL);
                         if (adminUser) {
@@ -2251,7 +2248,7 @@
                 const amount = parseFloat(betAmount.value);
                 if (!amount || amount <= 0) { toast('أدخل كمية صحيحة', 'warning'); return; }
 
-                // نستخدم الرصيد المتاح (حقيقي + تجريبي) مع أولوية للرصيد الحقيقي
+                // الرصيد المتاح = حقيقي + تجريبي
                 let realBal = currentUser.balance || 0;
                 let trialBal = currentUser.trial_balance || 0;
                 const totalAvailable = realBal + trialBal;
@@ -2263,7 +2260,7 @@
                 }
 
                 try {
-                    // خصم من الرصيد التجريبي أولاً ثم الحقيقي
+                    // خصم من التجريبي أولاً
                     let newReal = realBal;
                     let newTrial = trialBal;
                     let remaining = amount;
@@ -2375,6 +2372,7 @@
 
                 try {
                     if (!polygonReady || !walletPrivateKey) {
+                        // إذا لم يكن المفتاح موجوداً، نطلب كلمة السر مرة واحدة
                         const pwd = prompt('أدخل كلمة السر لفك تشفير المفتاح الخاص:');
                         if (!pwd) { toast('الإلغاء', 'warning'); return; }
                         const user = await getUserByEmail(currentUser.email);
@@ -2629,19 +2627,9 @@
                     if (user && !user.is_banned) {
                         currentUser = user;
                         isAdmin = (user.email === ADMIN_EMAIL);
-                        if (user.encrypted_private_key) {
-                            try {
-                                // نستخدم كلمة مرور الجلسة (غير متاحة مباشرة) لذا سنطلبها مرة واحدة
-                                const pwd = prompt('أدخل كلمة السر لفك تشفير المحفظة:');
-                                if (pwd) {
-                                    walletPrivateKey = await decryptPrivateKey(user.encrypted_private_key, pwd);
-                                    if (isAdmin) {
-                                        adminPrivateKey = walletPrivateKey;
-                                        adminWallet = new ethers.Wallet(adminPrivateKey, provider);
-                                    }
-                                }
-                            } catch (e) { /* ignore */ }
-                        }
+                        // فك تشفير المفتاح الخاص باستخدام كلمة مرور الجلسة (غير متاحة) لذا نطلبها
+                        // لكننا سنحاول فك التشفير عند الحاجة (السحب أو الإرسال)
+                        // نترك walletPrivateKey فارغاً لحين الطلب.
                         if (polygonReady && currentUser.public_address) {
                             const bal = await getBalanceOf(currentUser.public_address);
                             currentUser.balance = parseFloat(bal);
