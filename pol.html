@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VaultLine - المحادثات والعجلة</title>
+    <title>VaultLine - المحادثات والعجلة (Blockchain)</title>
     <!-- تحميل المكتبات -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
@@ -11,301 +11,243 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
     </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* هنا نضع نفس الأنماط السابقة (لم تتغير) */
+        /* ===== أنماط محسنة ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0b0e14;
+            font-family: 'Cairo', sans-serif;
+            background: #0a0e17;
             color: #e8edf5;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 12px;
+            background-image: radial-gradient(circle at 20% 50%, #141c2b 0%, #0a0e17 90%);
         }
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1a1f2a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #3a4a6a;
-            border-radius: 8px;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1f2a; }
+        ::-webkit-scrollbar-thumb { background: #3a4a6a; border-radius: 8px; }
+
         #app {
-            max-width: 960px;
+            max-width: 1100px;
             width: 100%;
-            background: #121820;
-            border-radius: 28px;
-            padding: 20px 22px 28px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-            border: 1px solid #2a3344;
-            position: relative;
+            background: rgba(18, 24, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 24px 28px 32px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(42, 51, 68, 0.6);
         }
-        #authScreen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px 10px 20px;
-        }
-        #authScreen .logo {
-            font-size: 38px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #b388ff, #82b1ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-        #authScreen .sub {
-            color: #8a9bb5;
-            font-size: 15px;
-            margin-bottom: 28px;
-        }
+
+        /* ===== الشاشات ===== */
+        #authScreen { display: flex; flex-direction: column; align-items: center; padding: 30px 10px; }
+        #authScreen .logo { font-size: 44px; font-weight: 700; background: linear-gradient(135deg, #b388ff, #82b1ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; letter-spacing: -1px; }
+        #authScreen .sub { color: #8a9bb5; font-size: 16px; margin-bottom: 30px; }
+
         .auth-box {
-            background: #1a212c;
-            padding: 28px 30px;
-            border-radius: 20px;
+            background: rgba(26, 33, 44, 0.8);
+            backdrop-filter: blur(8px);
+            padding: 32px 34px;
+            border-radius: 24px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             border: 1px solid #2e3a4e;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
         }
         .auth-box input {
             width: 100%;
-            padding: 12px 16px;
-            margin-bottom: 14px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
             background: #0e141e;
             border: 1px solid #2a3344;
-            border-radius: 12px;
+            border-radius: 14px;
             color: #e8edf5;
             font-size: 15px;
             transition: 0.2s;
+            font-family: 'Cairo', sans-serif;
         }
-        .auth-box input:focus {
-            outline: none;
-            border-color: #7c9cff;
-            box-shadow: 0 0 0 3px rgba(124, 156, 255, 0.2);
+        .auth-box input:focus { outline: none; border-color: #7c9cff; box-shadow: 0 0 0 4px rgba(124,156,255,0.15); }
+        .auth-box .password-wrapper {
+            position: relative;
         }
+        .auth-box .password-wrapper input {
+            padding-left: 48px;
+        }
+        .auth-box .password-wrapper .toggle-pwd {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #8a9bb5;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 8px;
+            line-height: 1;
+        }
+        .auth-box .password-wrapper .toggle-pwd:hover { color: #b0c4ff; }
         .auth-box button {
             width: 100%;
-            padding: 13px;
-            background: #4a6cf7;
+            padding: 14px;
+            background: linear-gradient(135deg, #4a6cf7, #6a4cf7);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: #fff;
-            font-weight: 600;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 17px;
             cursor: pointer;
             transition: 0.2s;
             margin-top: 6px;
+            font-family: 'Cairo', sans-serif;
+            letter-spacing: 0.3px;
         }
-        .auth-box button:hover {
-            background: #5a7cff;
-            transform: scale(1.01);
-        }
+        .auth-box button:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(74, 108, 247, 0.35); }
         .auth-box .switch {
             text-align: center;
-            margin-top: 16px;
+            margin-top: 18px;
             color: #8a9bb5;
             font-size: 14px;
         }
-        .auth-box .switch span {
-            color: #7c9cff;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .auth-box .switch span:hover {
-            text-decoration: underline;
-        }
-        .auth-error {
-            color: #ff6b6b;
-            font-size: 13px;
-            margin-top: -8px;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-        .ref-badge {
-            background: #2a3a5a;
-            border-radius: 30px;
-            padding: 6px 18px;
-            font-size: 13px;
-            color: #b0c4ff;
-            margin-bottom: 18px;
-            display: inline-block;
-            border: 1px solid #4a6a9a;
-        }
-        #mainApp {
-            display: none;
-        }
+        .auth-box .switch span { color: #7c9cff; cursor: pointer; font-weight: 600; }
+        .auth-box .switch span:hover { text-decoration: underline; }
+        .auth-error { color: #ff6b6b; font-size: 13px; margin-top: -10px; margin-bottom: 14px; text-align: center; }
+        .ref-badge { background: #2a3a5a; border-radius: 30px; padding: 6px 20px; font-size: 14px; color: #b0c4ff; margin-bottom: 20px; border: 1px solid #4a6a9a; }
+
+        /* ===== التطبيق الرئيسي ===== */
+        #mainApp { display: none; }
+
         .app-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #1f2a3a;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(31, 42, 58, 0.8);
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
-        .app-header .brand {
-            font-size: 26px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #b388ff, #82b1ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .app-header .user-info {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-size: 14px;
-            color: #aab8d0;
-        }
-        .app-header .user-info .email {
-            color: #d0ddf5;
-        }
-        .app-header .user-info .logout-btn {
-            background: #2a3344;
-            border: none;
-            color: #e8edf5;
-            padding: 6px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.2s;
-        }
-        .app-header .user-info .logout-btn:hover {
-            background: #3a4a6a;
-        }
-        .admin-badge {
-            background: #ffd54f;
-            color: #1a1f2a;
-            padding: 2px 12px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-        }
+        .app-header .brand { font-size: 30px; font-weight: 700; background: linear-gradient(135deg, #b388ff, #82b1ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .app-header .user-info { display: flex; align-items: center; gap: 14px; font-size: 14px; color: #aab8d0; flex-wrap: wrap; }
+        .app-header .user-info .email { color: #d0ddf5; font-weight: 600; }
+        .app-header .user-info .logout-btn { background: #2a3344; border: none; color: #e8edf5; padding: 6px 18px; border-radius: 30px; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .app-header .user-info .logout-btn:hover { background: #3a4a6a; }
+        .admin-badge { background: #ffd54f; color: #1a1f2a; padding: 2px 14px; border-radius: 30px; font-size: 11px; font-weight: 700; }
+
         .tabs {
             display: flex;
-            gap: 6px;
-            margin-top: 18px;
+            gap: 4px;
+            margin-top: 16px;
             flex-wrap: wrap;
-            border-bottom: 1px solid #1f2a3a;
-            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(31, 42, 58, 0.6);
+            padding-bottom: 2px;
         }
         .tabs .tab-btn {
             background: transparent;
             border: none;
             color: #6a7a94;
-            padding: 10px 22px;
+            padding: 10px 24px;
             border-radius: 30px 30px 0 0;
             cursor: pointer;
             font-size: 15px;
             font-weight: 500;
             transition: 0.2s;
-            position: relative;
+            font-family: 'Cairo', sans-serif;
         }
-        .tabs .tab-btn:hover {
-            color: #c0d0e8;
-            background: #1a222e;
-        }
-        .tabs .tab-btn.active {
-            color: #e8edf5;
-            background: #1f2a3a;
-            box-shadow: 0 -2px 0 #4a6cf7;
-        }
-        .tab-content {
-            display: none;
-            padding-top: 20px;
-            animation: fade 0.25s ease;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        @keyframes fade {
-            0% {
-                opacity: 0.3;
-                transform: translateY(6px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .chat-top {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-            align-items: center;
-        }
-        .chat-top select {
-            background: #1a212c;
-            border: 1px solid #2a3344;
-            color: #e8edf5;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 14px;
-            min-width: 150px;
-        }
-        .chat-top select:focus {
-            outline: none;
-            border-color: #4a6cf7;
-        }
-        .chat-top .room-count {
-            font-size: 13px;
-            color: #6a7a94;
-        }
+        .tabs .tab-btn:hover { color: #c0d0e8; background: rgba(26, 34, 46, 0.5); }
+        .tabs .tab-btn.active { color: #e8edf5; background: #1f2a3a; box-shadow: 0 -2px 0 #4a6cf7; }
+
+        .tab-content { display: none; padding-top: 24px; animation: fade 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fade { 0% { opacity: 0.3; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* ===== الدردشة ===== */
+        .chat-top { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+        .chat-top select { background: #1a212c; border: 1px solid #2a3344; color: #e8edf5; padding: 8px 20px; border-radius: 30px; font-size: 14px; min-width: 160px; font-family: 'Cairo', sans-serif; }
+        .chat-top select:focus { outline: none; border-color: #4a6cf7; }
+        .chat-top .room-count { font-size: 13px; color: #6a7a94; }
+
         .chat-box {
             background: #0e141e;
-            border-radius: 16px;
-            height: 320px;
+            border-radius: 18px;
+            height: 340px;
             overflow-y: auto;
-            padding: 14px 16px;
+            padding: 16px 18px;
             border: 1px solid #1f2a3a;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
         .chat-box .msg {
-            padding: 6px 12px;
-            border-radius: 12px;
+            padding: 8px 16px;
+            border-radius: 16px;
             background: #1a212c;
-            max-width: 85%;
+            max-width: 82%;
             word-wrap: break-word;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
             align-self: flex-start;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
-        .chat-box .msg .sender {
-            font-weight: 600;
-            color: #82b1ff;
-            font-size: 12px;
-            display: block;
-        }
-        .chat-box .msg .time {
-            font-size: 10px;
-            color: #6a7a94;
-            margin-right: 8px;
-        }
-        .chat-box .msg.own {
-            align-self: flex-end;
-            background: #2a3a6a;
-        }
-        .chat-box .msg.own .sender {
-            color: #b388ff;
-        }
-        .chat-input-row {
-            display: flex;
+        .chat-box .msg .sender { font-weight: 600; color: #82b1ff; font-size: 12px; display: block; margin-bottom: 2px; }
+        .chat-box .msg .time { font-size: 10px; color: #6a7a94; margin-right: 10px; }
+        .chat-box .msg.own { align-self: flex-end; background: #2a3a6a; }
+        .chat-box .msg.own .sender { color: #b388ff; }
+
+        .chat-input-row { display: flex; gap: 12px; }
+        .chat-input-row input { flex: 1; padding: 12px 18px; background: #0e141e; border: 1px solid #2a3344; border-radius: 30px; color: #e8edf5; font-size: 14px; font-family: 'Cairo', sans-serif; }
+        .chat-input-row input:focus { outline: none; border-color: #4a6cf7; }
+        .chat-input-row button { padding: 12px 28px; background: linear-gradient(135deg, #4a6cf7, #6a4cf7); border: none; border-radius: 30px; color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: 'Cairo', sans-serif; }
+        .chat-input-row button:hover { transform: scale(1.03); }
+        .chat-input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .cooldown-hint { font-size: 12px; color: #6a7a94; margin-top: 6px; }
+
+        /* ===== اللعبة ===== */
+        .game-row { display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start; }
+        .game-wheel-wrap { flex: 0 0 300px; display: flex; flex-direction: column; align-items: center; }
+        #wheelCanvas { width: 280px; height: 280px; border-radius: 50%; border: 6px solid #2a3a5a; background: #0e141e; box-shadow: 0 0 40px rgba(74, 108, 247, 0.2); }
+        .game-timer { font-size: 22px; font-weight: 700; color: #82b1ff; margin: 10px 0 6px; background: #1a212c; padding: 6px 24px; border-radius: 40px; border: 1px solid #2a3344; }
+
+        .game-info { flex: 1; min-width: 260px; }
+        .game-info .round-info { font-size: 15px; color: #aab8d0; margin-bottom: 12px; }
+        .game-info .round-info strong { color: #e8edf5; }
+
+        .game-bets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
+            margin: 14px 0;
         }
-        .chat-input-row input {
+        .game-bets .bet-item {
+            background: #1a212c;
+            border: 2px solid #2a3344;
+            border-radius: 16px;
+            padding: 10px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+        .game-bets .bet-item:hover { border-color: #4a6cf7; background: #1f2a3e; transform: translateY(-2px); }
+        .game-bets .bet-item.selected { border-color: #b388ff; background: #2a2a5a; box-shadow: 0 0 20px rgba(179, 136, 255, 0.15); }
+        .game-bets .bet-item .emoji { font-size: 28px; display: block; margin-bottom: 2px; }
+        .game-bets .bet-item .label { font-size: 12px; color: #aab8d0; }
+        .game-bets .bet-item .pool { font-size: 11px; color: #6a8a9a; }
+
+        .bet-amount-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin: 14px 0;
+            flex-wrap: wrap;
+        }
+        .bet-amount-row input {
             flex: 1;
             padding: 10px 16px;
             background: #0e141e;
@@ -313,245 +255,154 @@
             border-radius: 30px;
             color: #e8edf5;
             font-size: 14px;
+            min-width: 100px;
+            font-family: 'Cairo', sans-serif;
         }
-        .chat-input-row input:focus {
-            outline: none;
-            border-color: #4a6cf7;
-        }
-        .chat-input-row button {
-            padding: 10px 24px;
-            background: #4a6cf7;
-            border: none;
-            border-radius: 30px;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .chat-input-row button:hover {
-            background: #5a7cff;
-        }
-        .chat-input-row button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .cooldown-hint {
-            font-size: 12px;
-            color: #6a7a94;
-            margin-top: 4px;
-            text-align: left;
-        }
-        .game-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            align-items: flex-start;
-        }
-        .game-wheel-wrap {
-            flex: 0 0 280px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #wheelCanvas {
-            width: 260px;
-            height: 260px;
-            border-radius: 50%;
-            border: 4px solid #2a3a5a;
-            background: #0e141e;
-            box-shadow: 0 0 30px rgba(74, 108, 247, 0.15);
-        }
-        .game-info {
-            flex: 1;
-            min-width: 220px;
-        }
-        .game-info .round-info {
-            font-size: 14px;
-            color: #aab8d0;
-            margin-bottom: 10px;
-        }
-        .game-info .round-info strong {
-            color: #e8edf5;
-        }
-        .game-bets {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin: 12px 0;
-        }
-        .game-bets .bet-item {
-            background: #1a212c;
-            border: 1px solid #2a3344;
-            border-radius: 12px;
-            padding: 8px 6px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 13px;
-        }
-        .game-bets .bet-item:hover {
-            border-color: #4a6cf7;
-            background: #1f2a3e;
-        }
-        .game-bets .bet-item.selected {
-            border-color: #b388ff;
-            background: #2a2a5a;
-        }
-        .game-bets .bet-item .emoji {
-            font-size: 26px;
-            display: block;
-        }
-        .game-bets .bet-item .label {
-            font-size: 12px;
-            color: #aab8d0;
-        }
-        .game-bets .bet-item .pool {
-            font-size: 11px;
-            color: #6a8a9a;
-        }
-        .bet-amount-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin: 12px 0;
-            flex-wrap: wrap;
-        }
-        .bet-amount-row input {
-            flex: 1;
-            padding: 8px 14px;
-            background: #0e141e;
-            border: 1px solid #2a3344;
-            border-radius: 30px;
-            color: #e8edf5;
-            font-size: 14px;
-            width: 100px;
-        }
-        .bet-amount-row input:focus {
-            outline: none;
-            border-color: #4a6cf7;
-        }
+        .bet-amount-row input:focus { outline: none; border-color: #4a6cf7; }
         .bet-amount-row button {
-            padding: 8px 24px;
-            background: #4a6cf7;
+            padding: 10px 28px;
+            background: linear-gradient(135deg, #4a6cf7, #6a4cf7);
             border: none;
             border-radius: 30px;
             color: #fff;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: 0.2s;
+            font-family: 'Cairo', sans-serif;
         }
-        .bet-amount-row button:hover {
-            background: #5a7cff;
+        .bet-amount-row button:hover { transform: scale(1.03); }
+        .bet-amount-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .bet-amount-row .mode-toggle {
+            background: #2a3344;
+            border: none;
+            border-radius: 30px;
+            color: #e8edf5;
+            padding: 8px 18px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Cairo', sans-serif;
         }
-        .bet-amount-row button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
+        .bet-amount-row .mode-toggle:hover { background: #3a4a6a; }
+        .bet-amount-row .mode-toggle.real { background: #4a6cf7; }
+
         .game-result {
             margin-top: 14px;
-            padding: 14px 18px;
-            background: #1a212c;
-            border-radius: 14px;
-            border: 1px solid #2a3344;
-            font-size: 15px;
-            min-height: 60px;
-        }
-        .game-result .winner {
-            color: #b388ff;
-            font-weight: 700;
-        }
-        .game-result .box-win {
-            color: #ffd54f;
-        }
-        .game-timer {
-            font-size: 20px;
-            font-weight: 700;
-            color: #82b1ff;
-            margin: 6px 0;
-        }
-        .wallet-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        @media (max-width:600px) {
-            .wallet-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .wallet-card {
+            padding: 16px 20px;
             background: #1a212c;
             border-radius: 16px;
-            padding: 18px 20px;
+            border: 1px solid #2a3344;
+            font-size: 16px;
+            min-height: 70px;
+            line-height: 1.8;
+        }
+        .game-result .winner { color: #b388ff; font-weight: 700; }
+        .game-result .box-win { color: #ffd54f; }
+
+        /* ===== المحفظة ===== */
+        .wallet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width:700px){ .wallet-grid { grid-template-columns: 1fr; } }
+        .wallet-card {
+            background: #1a212c;
+            border-radius: 20px;
+            padding: 22px 24px;
             border: 1px solid #2a3344;
         }
-        .wallet-card .label {
-            font-size: 12px;
-            color: #6a7a94;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .wallet-card .label { font-size: 12px; color: #6a7a94; text-transform: uppercase; letter-spacing: 0.5px; }
+        .wallet-card .value { font-size: 20px; font-weight: 700; margin: 6px 0 4px; word-break: break-all; }
+        .wallet-card .value.small { font-size: 14px; font-weight: 400; color: #aab8d0; }
+        .wallet-card .qr-wrap { display: flex; justify-content: center; margin: 10px 0; }
+        .wallet-card .qr-wrap canvas, .wallet-card .qr-wrap img { border-radius: 16px; background: #fff; padding: 8px; width: 150px; height: 150px; }
+        .wallet-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+        .wallet-actions button { padding: 8px 22px; background: #2a3344; border: none; border-radius: 30px; color: #e8edf5; cursor: pointer; font-size: 13px; transition: 0.2s; font-family: 'Cairo', sans-serif; }
+        .wallet-actions button:hover { background: #3a4a6a; }
+        .wallet-actions button.primary { background: #4a6cf7; }
+        .wallet-actions button.primary:hover { background: #5a7cff; }
+        .wallet-actions button.danger { background: #b34141; }
+        .wallet-actions button.danger:hover { background: #d44a4a; }
+
+        .withdraw-section { margin-top: 18px; padding-top: 18px; border-top: 1px solid #1f2a3a; }
+        .withdraw-section input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0e141e;
+            border: 1px solid #2a3344;
+            border-radius: 14px;
+            color: #e8edf5;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-family: 'Cairo', sans-serif;
         }
-        .wallet-card .value {
-            font-size: 18px;
-            font-weight: 600;
-            margin: 6px 0 4px;
-            word-break: break-all;
+        .withdraw-section input:focus { outline: none; border-color: #4a6cf7; }
+        .withdraw-section .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+        /* ===== الإعدادات ===== */
+        .settings-group {
+            background: #1a212c;
+            border-radius: 20px;
+            padding: 22px 28px;
+            border: 1px solid #2a3344;
+            margin-bottom: 20px;
         }
-        .wallet-card .value.small {
-            font-size: 13px;
-            font-weight: 400;
-            color: #aab8d0;
+        .settings-group h4 { font-size: 17px; margin-bottom: 14px; color: #b0c4ff; }
+        .settings-group .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+        .settings-group input {
+            flex: 1;
+            padding: 12px 16px;
+            background: #0e141e;
+            border: 1px solid #2a3344;
+            border-radius: 14px;
+            color: #e8edf5;
+            font-size: 14px;
+            min-width: 180px;
+            font-family: 'Cairo', sans-serif;
         }
-        .wallet-card .qr-wrap {
-            display: flex;
-            justify-content: center;
-            margin: 8px 0;
-        }
-        .wallet-card .qr-wrap canvas,
-        .wallet-card .qr-wrap img {
-            border-radius: 12px;
-            background: #fff;
-            padding: 8px;
-            width: 140px;
-            height: 140px;
-        }
-        .wallet-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-        .wallet-actions button {
-            padding: 8px 20px;
-            background: #2a3344;
+        .settings-group input:focus { outline: none; border-color: #4a6cf7; }
+        .settings-group button {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #4a6cf7, #6a4cf7);
             border: none;
             border-radius: 30px;
-            color: #e8edf5;
+            color: #fff;
+            font-weight: 700;
             cursor: pointer;
-            font-size: 13px;
             transition: 0.2s;
+            font-family: 'Cairo', sans-serif;
         }
-        .wallet-actions button:hover {
-            background: #3a4a6a;
+        .settings-group button:hover { transform: scale(1.02); }
+        .settings-group .ref-link {
+            background: #0e141e;
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 1px solid #2a3344;
+            word-break: break-all;
+            font-size: 14px;
+            color: #82b1ff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
-        .wallet-actions button.primary {
-            background: #4a6cf7;
+        .settings-group .ref-link button { padding: 4px 18px; font-size: 12px; background: #2a3344; }
+
+        /* ===== لوحة المدير ===== */
+        #adminPanel {
+            display: none;
+            margin-top: 24px;
+            padding-top: 22px;
+            border-top: 2px solid rgba(255, 213, 79, 0.3);
         }
-        .wallet-actions button.primary:hover {
-            background: #5a7cff;
+        #adminPanel .admin-title { color: #ffd54f; font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media (max-width:700px){ .admin-grid { grid-template-columns: 1fr; } }
+        .admin-card {
+            background: #1a212c;
+            border-radius: 18px;
+            padding: 18px 22px;
+            border: 1px solid #2a3344;
         }
-        .wallet-actions button.danger {
-            background: #b34141;
-        }
-        .wallet-actions button.danger:hover {
-            background: #d44a4a;
-        }
-        .withdraw-section {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #1f2a3a;
-        }
-        .withdraw-section input {
+        .admin-card h5 { color: #b0c4ff; margin-bottom: 10px; font-size: 15px; }
+        .admin-card input, .admin-card select {
             width: 100%;
             padding: 10px 14px;
             background: #0e141e;
@@ -559,135 +410,12 @@
             border-radius: 12px;
             color: #e8edf5;
             margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .withdraw-section input:focus {
-            outline: none;
-            border-color: #4a6cf7;
-        }
-        .withdraw-section .row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .settings-group {
-            background: #1a212c;
-            border-radius: 16px;
-            padding: 20px 24px;
-            border: 1px solid #2a3344;
-            margin-bottom: 18px;
-        }
-        .settings-group h4 {
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: #b0c4ff;
-        }
-        .settings-group .row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .settings-group input {
-            flex: 1;
-            padding: 10px 14px;
-            background: #0e141e;
-            border: 1px solid #2a3344;
-            border-radius: 12px;
-            color: #e8edf5;
-            font-size: 14px;
-            min-width: 160px;
-        }
-        .settings-group input:focus {
-            outline: none;
-            border-color: #4a6cf7;
-        }
-        .settings-group button {
-            padding: 10px 24px;
-            background: #4a6cf7;
-            border: none;
-            border-radius: 30px;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .settings-group button:hover {
-            background: #5a7cff;
-        }
-        .settings-group .ref-link {
-            background: #0e141e;
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 1px solid #2a3344;
-            word-break: break-all;
-            font-size: 14px;
-            color: #82b1ff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .settings-group .ref-link button {
-            padding: 4px 16px;
-            font-size: 12px;
-            background: #2a3344;
-        }
-        .settings-group .ref-link button:hover {
-            background: #3a4a6a;
-        }
-        #adminPanel {
-            display: none;
-            margin-top: 20px;
-            padding-top: 18px;
-            border-top: 2px solid #ffd54f40;
-        }
-        #adminPanel .admin-title {
-            color: #ffd54f;
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-        .admin-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        @media (max-width:600px) {
-            .admin-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .admin-card {
-            background: #1a212c;
-            border-radius: 14px;
-            padding: 16px 18px;
-            border: 1px solid #2a3344;
-        }
-        .admin-card h5 {
-            color: #b0c4ff;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        .admin-card input,
-        .admin-card select {
-            width: 100%;
-            padding: 8px 12px;
-            background: #0e141e;
-            border: 1px solid #2a3344;
-            border-radius: 10px;
-            color: #e8edf5;
-            margin-bottom: 8px;
             font-size: 13px;
+            font-family: 'Cairo', sans-serif;
         }
-        .admin-card input:focus,
-        .admin-card select:focus {
-            outline: none;
-            border-color: #4a6cf7;
-        }
+        .admin-card input:focus, .admin-card select:focus { outline: none; border-color: #4a6cf7; }
         .admin-card button {
-            padding: 6px 18px;
+            padding: 8px 22px;
             background: #2a3344;
             border: none;
             border-radius: 30px;
@@ -695,27 +423,16 @@
             cursor: pointer;
             font-size: 13px;
             transition: 0.2s;
+            font-family: 'Cairo', sans-serif;
         }
-        .admin-card button:hover {
-            background: #3a4a6a;
-        }
-        .admin-card button.primary {
-            background: #4a6cf7;
-        }
-        .admin-card button.primary:hover {
-            background: #5a7cff;
-        }
-        .admin-card button.danger {
-            background: #b34141;
-        }
-        .admin-card button.danger:hover {
-            background: #d44a4a;
-        }
-        .admin-card .hint {
-            font-size: 11px;
-            color: #6a7a94;
-            margin-top: 4px;
-        }
+        .admin-card button:hover { background: #3a4a6a; }
+        .admin-card button.primary { background: #4a6cf7; }
+        .admin-card button.primary:hover { background: #5a7cff; }
+        .admin-card button.danger { background: #b34141; }
+        .admin-card button.danger:hover { background: #d44a4a; }
+        .admin-card .hint { font-size: 11px; color: #6a7a94; margin-top: 6px; }
+
+        /* ===== توست ===== */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -724,7 +441,7 @@
             z-index: 999;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             align-items: center;
             pointer-events: none;
             max-width: 90%;
@@ -732,52 +449,39 @@
         .toast {
             background: #1a212c;
             border: 1px solid #2a3344;
-            padding: 12px 24px;
-            border-radius: 30px;
+            padding: 14px 28px;
+            border-radius: 40px;
             font-size: 14px;
             color: #e8edf5;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
             pointer-events: auto;
-            animation: slideDown 0.25s ease;
+            animation: slideDown 0.3s ease;
             text-align: center;
             min-width: 200px;
+            backdrop-filter: blur(8px);
+            font-family: 'Cairo', sans-serif;
         }
-        .toast.success {
-            border-color: #4caf50;
+        .toast.success { border-color: #4caf50; }
+        .toast.error { border-color: #ff6b6b; }
+        .toast.warning { border-color: #ffd54f; }
+        @keyframes slideDown { 0% { opacity: 0; transform: translateY(-24px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        .hidden { display: none !important; }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .flex-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+        .mode-indicator {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #2a3344;
+            color: #aab8d0;
         }
-        .toast.error {
-            border-color: #ff6b6b;
-        }
-        .toast.warning {
-            border-color: #ffd54f;
-        }
-        @keyframes slideDown {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .hidden {
-            display: none !important;
-        }
-        .mt-8 {
-            margin-top: 8px;
-        }
-        .mt-12 {
-            margin-top: 12px;
-        }
-        .gap-6 {
-            gap: 6px;
-        }
-        .flex-wrap {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+        .mode-indicator.real { background: #4a6cf7; color: #fff; }
+        .mode-indicator.trial { background: #ffd54f; color: #1a1f2a; }
     </style>
 </head>
 <body>
@@ -790,13 +494,20 @@
         <!-- AUTH SCREEN -->
         <div id="authScreen">
             <div class="logo">⛓️ VaultLine</div>
-            <div class="sub">محادثات · لعبة عجلة · محفظة</div>
+            <div class="sub">محادثات · لعبة عجلة · محفظة على البلوكشين</div>
             <div id="refBadge" class="ref-badge hidden">🎁 تم الدعوة عبر رابط إحالة</div>
 
             <div class="auth-box">
                 <div id="authForm">
                     <input type="email" id="authEmail" placeholder="البريد الإلكتروني" />
-                    <input type="password" id="authPassword" placeholder="كلمة السر" />
+                    <div class="password-wrapper">
+                        <input type="password" id="authPassword" placeholder="كلمة السر" />
+                        <button type="button" class="toggle-pwd" id="togglePwdAuth">👁️</button>
+                    </div>
+                    <div id="confirmPasswordWrapper" class="hidden password-wrapper">
+                        <input type="password" id="confirmPassword" placeholder="تأكيد كلمة السر" />
+                        <button type="button" class="toggle-pwd" id="toggleConfirmPwd">👁️</button>
+                    </div>
                     <div id="authError" class="auth-error"></div>
                     <button id="authSubmitBtn">تسجيل الدخول</button>
                     <div class="switch">
@@ -845,8 +556,12 @@
             <div class="tab-content" id="tabGame">
                 <div class="game-row">
                     <div class="game-wheel-wrap">
-                        <canvas id="wheelCanvas" width="260" height="260"></canvas>
+                        <canvas id="wheelCanvas" width="300" height="300"></canvas>
                         <div class="game-timer" id="gameTimer">⏳ 60</div>
+                        <div style="display:flex; gap:12px; margin-top:6px;">
+                            <span class="mode-indicator" id="modeIndicator">تجريبي</span>
+                            <button class="mode-toggle" id="toggleModeBtn">🔄 تبديل الوضع</button>
+                        </div>
                     </div>
                     <div class="game-info">
                         <div class="round-info">الدورة #<strong id="roundNum">0</strong> · <span id="gameStatus">انتظار</span></div>
@@ -862,6 +577,7 @@
                             <input type="number" id="betAmount" placeholder="الكمية (POL)" min="0.1" step="0.1" value="1" />
                             <button id="placeBetBtn">وضع رهان</button>
                             <span style="font-size:13px;color:#6a7a94;" id="userBalanceGame">رصيدك: 0 POL</span>
+                            <span style="font-size:12px;color:#6a7a94;" id="trialBalanceDisplay">(تجريبي: 0)</span>
                         </div>
                         <div class="game-result" id="gameResult">🎲 انتظر بدء الدورة...</div>
                     </div>
@@ -881,10 +597,12 @@
                         </div>
                     </div>
                     <div class="wallet-card">
-                        <div class="label">الرصيد</div>
+                        <div class="label">الرصيد الحقيقي</div>
                         <div class="value" id="walletBalance">0.00 POL</div>
                         <div class="label" style="margin-top:6px;">القيمة بالدولار</div>
                         <div class="value" id="walletUsd" style="font-size:16px;">$0.00</div>
+                        <div class="label" style="margin-top:10px;">الرصيد التجريبي</div>
+                        <div class="value" id="trialBalanceWallet">0.00 POL</div>
                         <div class="withdraw-section">
                             <div class="label">سحب إلى محفظة خارجية</div>
                             <input type="text" id="withdrawAddress" placeholder="عنوان المحفظة (Polygon)" />
@@ -892,7 +610,7 @@
                                 <input type="number" id="withdrawAmount" placeholder="الكمية (POL)" min="100" step="1" />
                                 <button class="primary" id="withdrawBtn">سحب</button>
                             </div>
-                            <div class="hint" style="font-size:11px;color:#6a7a94;">الحد الأدنى 100 POL</div>
+                            <div class="hint" style="font-size:11px;color:#6a7a94;">الحد الأدنى 100 POL (حقيقي)</div>
                         </div>
                     </div>
                 </div>
@@ -913,7 +631,7 @@
                         <span id="refLinkText">جاري التحميل...</span>
                         <button id="copyRefBtn">📋 نسخ</button>
                     </div>
-                    <div style="font-size:12px;color:#6a7a94;margin-top:8px;">كل مشترك عبر رابطك يمنحك 3 POL</div>
+                    <div style="font-size:12px;color:#6a7a94;margin-top:8px;">كل مشترك عبر رابطك يمنحك 3 POL (حقيقي)</div>
                 </div>
             </div>
 
@@ -943,10 +661,10 @@
                         <button class="primary" id="adminWithdrawBtn">سحب</button>
                     </div>
                     <div class="admin-card">
-                        <h5>📊 توزيع الأرباح</h5>
+                        <h5>📊 توزيع الأرباح (حسب وقت التواجد)</h5>
                         <input type="number" id="profitAmount" placeholder="المبلغ (POL)" step="0.1" />
-                        <button class="primary" id="distributeProfitBtn">توزيع حسب التواجد</button>
-                        <div class="hint">يوزع على المستخدمين حسب مدة تواجدهم في الغرف</div>
+                        <button class="primary" id="distributeProfitBtn">توزيع</button>
+                        <div class="hint">يوزع على المستخدمين حسب مدة تواجدهم في الغرفة (معاملات حقيقية)</div>
                     </div>
                     <div class="admin-card">
                         <h5>📈 إحصائيات سريعة</h5>
@@ -960,25 +678,22 @@
     </div>
 
     <!-- ================================================================== -->
-    <!-- جافا سكريبت - نسخة مُصلحة بالكامل                                  -->
+    <!-- جافا سكريبت - نسخة معدلة بالكامل                                     -->
     <!-- ================================================================== -->
     <script>
         (function() {
             'use strict';
 
             // ================================================================
-            //  SUPABASE CONFIG (تم التعديل)
+            //  CONFIG (تم التعديل لاستخدام Infura على Mainnet)
             // ================================================================
             const SUPABASE_URL = 'https://mbtdjanmfnmtxzsjrfgn.supabase.co';
             const SUPABASE_KEY = 'sb_publishable_9cQ59wQ3cK6K6bjrLVHxCw_DWuu4uZl';
-
-            // ✅ استخدام window.supabase لأن المكتبة تُحمَّل عبر script
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-            // ================================================================
-            //  CONSTANTS
-            // ================================================================
             const ADMIN_EMAIL = 'youcanuseoneold@gmail.com';
+            // لا نضع المفتاح الخاص هنا، سيتم جلبها من قاعدة البيانات مشفرة
+            const POLYGON_RPC_URL = 'https://polygon-mainnet.infura.io/v3/b9f50434854a4405ab889ade26279a99';
+            const CHAIN_ID = 137; // Polygon Mainnet
+
             const GAME_CHOICES = ['cherry', 'banana', 'apple', 'cow', 'fish', 'chicken'];
             const CHOICE_EMOJI = { cherry: '🍒', banana: '🍌', apple: '🍎', cow: '🐄', fish: '🐟', chicken: '🐔' };
             const CHOICE_LABEL = { cherry: 'كرزة', banana: 'موزة', apple: 'تفاحة', cow: 'بقرة', fish: 'سمكة', chicken: 'دجاجة' };
@@ -986,7 +701,32 @@
             const BET_WINDOW_SEC = 60;
             const MIN_WITHDRAW = 100;
             const REFERRAL_BONUS = 3;
-            const SIGNUP_BONUS = 10;
+            const SIGNUP_BONUS_TRIAL = 10;
+
+            // ================================================================
+            //  SUPABASE CLIENT
+            // ================================================================
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            // ================================================================
+            //  ETHERS PROVIDER (بدون مفتاح خاص ثابت)
+            // ================================================================
+            let provider = null;
+            let polygonProviderReady = false;
+            // سنخزن المفتاح الخاص للمدير بعد فك تشفيره في متغير
+            let adminPrivateKey = null;
+            let adminWallet = null;
+
+            async function initBlockchain() {
+                try {
+                    provider = new ethers.providers.JsonRpcProvider(POLYGON_RPC_URL, CHAIN_ID);
+                    polygonProviderReady = true;
+                    console.log('✅ Blockchain provider ready (Polygon Mainnet)');
+                } catch (e) {
+                    console.error('Blockchain init error:', e);
+                    polygonProviderReady = false;
+                }
+            }
 
             // ================================================================
             //  STATE
@@ -1000,7 +740,11 @@
             let gameInterval = null;
             let chatInterval = null;
             let isAdmin = false;
-            let walletPrivateKey = null;
+            let walletPrivateKey = null; // مفتاح المستخدم الحالي
+            let isRealMode = false;
+            let gameRoundId = null;
+            let betPlacedForRound = false;
+            let selectedChoice = null;
 
             // ================================================================
             //  DOM REFS
@@ -1010,10 +754,14 @@
             const mainApp = $('mainApp');
             const authEmail = $('authEmail');
             const authPassword = $('authPassword');
+            const confirmPassword = $('confirmPassword');
+            const confirmPasswordWrapper = $('confirmPasswordWrapper');
             const authError = $('authError');
             const authSubmitBtn = $('authSubmitBtn');
             const authSwitchBtn = $('authSwitchBtn');
             const refBadge = $('refBadge');
+            const togglePwdAuth = $('togglePwdAuth');
+            const toggleConfirmPwd = $('toggleConfirmPwd');
             const userEmailDisplay = $('userEmailDisplay');
             const adminBadge = $('adminBadge');
             const logoutBtn = $('logoutBtn');
@@ -1031,6 +779,7 @@
             const betAmount = $('betAmount');
             const placeBetBtn = $('placeBetBtn');
             const userBalanceGame = $('userBalanceGame');
+            const trialBalanceDisplay = $('trialBalanceDisplay');
             const gameResult = $('gameResult');
             const walletAddress = $('walletAddress');
             const qrCodeContainer = $('qrCodeContainer');
@@ -1038,6 +787,7 @@
             const downloadQrBtn = $('downloadQrBtn');
             const walletBalance = $('walletBalance');
             const walletUsd = $('walletUsd');
+            const trialBalanceWallet = $('trialBalanceWallet');
             const withdrawAddress = $('withdrawAddress');
             const withdrawAmount = $('withdrawAmount');
             const withdrawBtn = $('withdrawBtn');
@@ -1059,6 +809,8 @@
             const distributeProfitBtn = $('distributeProfitBtn');
             const adminStatsBtn = $('adminStatsBtn');
             const adminStatsDisplay = $('adminStatsDisplay');
+            const toggleModeBtn = $('toggleModeBtn');
+            const modeIndicator = $('modeIndicator');
 
             // ================================================================
             //  TOAST
@@ -1070,7 +822,7 @@
                 el.textContent = msg;
                 c.appendChild(el);
                 setTimeout(() => { el.style.opacity = '0';
-                    setTimeout(() => el.remove(), 400); }, 3000);
+                    setTimeout(() => el.remove(), 400); }, 4000);
             }
 
             // ================================================================
@@ -1093,7 +845,7 @@
             }
 
             // ================================================================
-            //  WALLET (Ethers)
+            //  WALLET (Ethers) - إنشاء محفظة
             // ================================================================
             async function createWallet() {
                 const wallet = ethers.Wallet.createRandom();
@@ -1104,6 +856,7 @@
                 };
             }
 
+            // تشفير وفك تشفير المفتاح الخاص (نفس الكود السابق)
             async function encryptPrivateKey(privateKey, password) {
                 const enc = new TextEncoder();
                 const keyMaterial = await crypto.subtle.importKey(
@@ -1147,6 +900,30 @@
                     key, data
                 );
                 return new TextDecoder().decode(decrypted);
+            }
+
+            // ================================================================
+            //  BLOCKCHAIN TRANSACTIONS (باستخدام المفاتيح الخاصة المخزنة)
+            // ================================================================
+            async function sendPolygonTransaction(fromPrivateKey, toAddress, amountPOL) {
+                if (!polygonProviderReady) throw new Error('Blockchain not ready');
+                const wallet = new ethers.Wallet(fromPrivateKey, provider);
+                const amountWei = ethers.utils.parseEther(amountPOL.toString());
+                const tx = {
+                    to: toAddress,
+                    value: amountWei,
+                    gasLimit: 21000,
+                    gasPrice: await provider.getGasPrice(),
+                };
+                const response = await wallet.sendTransaction(tx);
+                await response.wait();
+                return response;
+            }
+
+            async function getBalanceOf(address) {
+                if (!polygonProviderReady) return '0';
+                const balance = await provider.getBalance(address);
+                return ethers.utils.formatEther(balance);
             }
 
             // ================================================================
@@ -1223,7 +1000,7 @@
                 return data || [];
             }
 
-            async function placeBet(roundId, userId, choice, amount) {
+            async function placeBetDB(roundId, userId, choice, amount) {
                 const { data, error } = await supabase
                     .from('bets')
                     .insert({ round_id: roundId, user_id: userId, choice, amount })
@@ -1237,6 +1014,14 @@
                 const { error } = await supabase
                     .from('users')
                     .update({ balance: newBalance })
+                    .eq('id', userId);
+                if (error) throw error;
+            }
+
+            async function updateUserTrialBalance(userId, newTrialBalance) {
+                const { error } = await supabase
+                    .from('users')
+                    .update({ trial_balance: newTrialBalance })
                     .eq('id', userId);
                 if (error) throw error;
             }
@@ -1288,15 +1073,33 @@
             // ================================================================
             let isLoginMode = true;
 
+            // تبديل إظهار كلمة السر
+            function togglePasswordVisibility(inputId, btn) {
+                const input = document.getElementById(inputId);
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    btn.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    btn.textContent = '👁️';
+                }
+            }
+
+            togglePwdAuth.addEventListener('click', () => togglePasswordVisibility('authPassword', togglePwdAuth));
+            toggleConfirmPwd.addEventListener('click', () => togglePasswordVisibility('confirmPassword', toggleConfirmPwd));
+
             authSwitchBtn.addEventListener('click', () => {
                 isLoginMode = !isLoginMode;
                 authSubmitBtn.textContent = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب';
                 authSwitchBtn.textContent = isLoginMode ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
                 authError.textContent = '';
-                const ref = getReferralCode();
-                if (!isLoginMode && ref) {
-                    refBadge.classList.remove('hidden');
+                if (!isLoginMode) {
+                    confirmPasswordWrapper.classList.remove('hidden');
+                    const ref = getReferralCode();
+                    if (ref) refBadge.classList.remove('hidden');
+                    else refBadge.classList.add('hidden');
                 } else {
+                    confirmPasswordWrapper.classList.add('hidden');
                     refBadge.classList.add('hidden');
                 }
             });
@@ -1304,8 +1107,14 @@
             authSubmitBtn.addEventListener('click', async () => {
                 const email = authEmail.value.trim();
                 const password = authPassword.value;
+                const confirm = confirmPassword.value;
+
                 if (!email || !password) {
                     authError.textContent = 'الرجاء ملء جميع الحقول';
+                    return;
+                }
+                if (!isLoginMode && password !== confirm) {
+                    authError.textContent = 'كلمة السر غير متطابقة';
                     return;
                 }
                 authError.textContent = '';
@@ -1336,7 +1145,6 @@
 
                 let user = await getUserByEmail(email);
                 if (!user) throw new Error('الرجاء إنشاء حساب أولاً');
-
                 if (user.is_banned) throw new Error('تم حظر هذا الحساب');
 
                 let privKey = null;
@@ -1352,6 +1160,19 @@
                 walletPrivateKey = privKey;
                 isAdmin = (email === ADMIN_EMAIL);
 
+                // إذا كان المستخدم هو المدير، نحتاج إلى فك تشفير مفتاحه الخاص أيضاً لإرسال الجوائز
+                if (isAdmin && privKey) {
+                    adminPrivateKey = privKey;
+                    adminWallet = new ethers.Wallet(adminPrivateKey, provider);
+                }
+
+                // تحديث الرصيد الحقيقي من الشبكة
+                if (polygonProviderReady && currentUser.public_address) {
+                    const bal = await getBalanceOf(currentUser.public_address);
+                    currentUser.balance = parseFloat(bal);
+                    await updateUserBalance(currentUser.id, currentUser.balance);
+                }
+
                 enterApp();
                 toast('تم تسجيل الدخول بنجاح', 'success');
             }
@@ -1366,7 +1187,6 @@
                 const wallet = await createWallet();
                 const publicAddress = wallet.address;
                 const privateKey = wallet.privateKey;
-
                 const encrypted = await encryptPrivateKey(privateKey, password);
 
                 const refCode = getReferralCode();
@@ -1391,14 +1211,15 @@
                 if (authErr) throw new Error('فشل إنشاء الحساب: ' + authErr.message);
 
                 const userId = authData.user.id;
-
                 const myRefCode = generateReferralCode();
+
                 const newUser = {
                     id: userId,
                     email,
                     public_address: publicAddress,
                     encrypted_private_key: encrypted,
-                    balance: SIGNUP_BONUS,
+                    balance: 0,
+                    trial_balance: SIGNUP_BONUS_TRIAL,
                     referral_code: myRefCode,
                     referred_by: referredBy,
                     is_admin: (email === ADMIN_EMAIL),
@@ -1406,32 +1227,57 @@
                     muted_until: null,
                     created_at: new Date().toISOString(),
                 };
+
                 const { error: insertErr } = await supabase
                     .from('users')
                     .insert(newUser);
                 if (insertErr) throw new Error('فشل حفظ بيانات المستخدم: ' + insertErr.message);
 
-                if (referrer) {
-                    const refUser = await getUserById(referrer.id);
-                    if (refUser) {
-                        const newBal = (refUser.balance || 0) + REFERRAL_BONUS;
-                        await updateUserBalance(refUser.id, newBal);
-                        await supabase
-                            .from('referral_rewards')
-                            .insert({
-                                referrer_id: referrer.id,
-                                referred_id: userId,
-                                amount: REFERRAL_BONUS,
-                            });
+                // مكافأة الإحالة (حقيقية) - تحتاج إلى مفتاح المدير
+                if (referrer && polygonProviderReady && adminPrivateKey) {
+                    try {
+                        // جلب مفتاح المدير من قاعدة البيانات (إذا لم يكن موجوداً)
+                        if (!adminPrivateKey) {
+                            const adminUser = await getUserByEmail(ADMIN_EMAIL);
+                            if (adminUser && adminUser.encrypted_private_key) {
+                                // طلب كلمة المرور للمدير (مرة واحدة)
+                                const adminPwd = prompt('أدخل كلمة سر المدير لإرسال مكافأة الإحالة:');
+                                if (adminPwd) {
+                                    adminPrivateKey = await decryptPrivateKey(adminUser.encrypted_private_key, adminPwd);
+                                    adminWallet = new ethers.Wallet(adminPrivateKey, provider);
+                                }
+                            }
+                        }
+                        if (adminPrivateKey) {
+                            await sendPolygonTransaction(adminPrivateKey, referrer.public_address, REFERRAL_BONUS);
+                            const refUser = await getUserById(referrer.id);
+                            if (refUser) {
+                                const newBal = (refUser.balance || 0) + REFERRAL_BONUS;
+                                await updateUserBalance(refUser.id, newBal);
+                            }
+                            await supabase
+                                .from('referral_rewards')
+                                .insert({
+                                    referrer_id: referrer.id,
+                                    referred_id: userId,
+                                    amount: REFERRAL_BONUS,
+                                });
+                        }
+                    } catch (e) {
+                        console.error('Referral bonus failed:', e);
+                        toast('فشل إرسال مكافأة الإحالة', 'error');
                     }
                 }
 
-                currentUser = { ...newUser };
-                walletPrivateKey = privateKey;
-                isAdmin = (email === ADMIN_EMAIL);
-
-                enterApp();
-                toast('✅ تم إنشاء الحساب! رصيدك ' + SIGNUP_BONUS + ' POL', 'success');
+                toast('✅ تم إنشاء الحساب! تفقد بريدك الإلكتروني للتحقق وإنهاء التسجيل.', 'success');
+                authEmail.value = '';
+                authPassword.value = '';
+                confirmPassword.value = '';
+                isLoginMode = true;
+                authSubmitBtn.textContent = 'تسجيل الدخول';
+                authSwitchBtn.textContent = 'إنشاء حساب جديد';
+                confirmPasswordWrapper.classList.add('hidden');
+                refBadge.classList.add('hidden');
             }
 
             // ================================================================
@@ -1455,10 +1301,11 @@
                 setupRealtime();
                 updateBalanceDisplay();
                 updateRefLink();
+                updateModeUI();
             }
 
             // ================================================================
-            //  CHAT
+            //  CHAT FUNCTIONS
             // ================================================================
             async function loadRooms() {
                 try {
@@ -1512,10 +1359,10 @@
                     if (m.user_id === currentUser.id) div.classList.add('own');
                     const sender = m.users?.email || 'مجهول';
                     div.innerHTML = `
-                <span class="sender">${sender}</span>
-                <span>${m.content}</span>
-                <span class="time">${formatTime(m.created_at)}</span>
-              `;
+                        <span class="sender">${sender}</span>
+                        <span>${m.content}</span>
+                        <span class="time">${formatTime(m.created_at)}</span>
+                    `;
                     chatBox.appendChild(div);
                 });
                 chatBox.scrollTop = chatBox.scrollHeight;
@@ -1595,59 +1442,114 @@
             }
 
             // ================================================================
-            //  GAME (اختصار - نفس الوظائف السابقة)
+            //  GAME - مع تعديلات الرهان الحقيقي
             // ================================================================
-            let gameRoundId = null;
-            let betPlacedForRound = false;
-            let selectedChoice = null;
 
+            // رسم العجلة محسن
             function drawWheel(highlight = null) {
                 const ctx = wheelCanvas.getContext('2d');
                 const w = wheelCanvas.width,
                     h = wheelCanvas.height;
                 const cx = w / 2,
                     cy = h / 2,
-                    r = Math.min(w, h) / 2 - 10;
-                const colors = ['#e74c3c', '#f39c12', '#2ecc71', '#3498db', '#9b59b6', '#1abc9c'];
+                    r = Math.min(w, h) / 2 - 14;
+                const colors = [
+                    ['#e74c3c', '#c0392b'],
+                    ['#f39c12', '#e67e22'],
+                    ['#2ecc71', '#27ae60'],
+                    ['#3498db', '#2980b9'],
+                    ['#9b59b6', '#8e44ad'],
+                    ['#1abc9c', '#16a085']
+                ];
                 const n = GAME_CHOICES.length;
                 const arc = (2 * Math.PI) / n;
 
                 ctx.clearRect(0, 0, w, h);
+                ctx.shadowColor = 'rgba(74, 108, 247, 0.3)';
+                ctx.shadowBlur = 30;
+
                 GAME_CHOICES.forEach((ch, i) => {
                     const start = i * arc - Math.PI / 2;
                     const end = start + arc;
+                    const isHighlight = (highlight === ch);
+
+                    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+                    const col = colors[i % colors.length];
+                    grad.addColorStop(0, isHighlight ? '#ffd54f' : col[0]);
+                    grad.addColorStop(1, isHighlight ? '#f9a825' : col[1]);
+
                     ctx.beginPath();
                     ctx.moveTo(cx, cy);
                     ctx.arc(cx, cy, r, start, end);
                     ctx.closePath();
-                    ctx.fillStyle = (highlight === ch) ? '#ffd54f' : colors[i % colors.length];
+                    ctx.fillStyle = grad;
                     ctx.fill();
                     ctx.strokeStyle = '#1a1f2a';
                     ctx.lineWidth = 2;
                     ctx.stroke();
 
                     const mid = start + arc / 2;
-                    const tx = cx + (r * 0.65) * Math.cos(mid);
-                    const ty = cy + (r * 0.65) * Math.sin(mid);
+                    const tx = cx + (r * 0.7) * Math.cos(mid);
+                    const ty = cy + (r * 0.7) * Math.sin(mid);
+                    ctx.shadowBlur = 0;
                     ctx.fillStyle = '#fff';
-                    ctx.font = 'bold 18px sans-serif';
+                    ctx.font = 'bold 24px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText(CHOICE_EMOJI[ch] || '?', tx, ty);
                 });
+
+                ctx.shadowBlur = 0;
                 ctx.beginPath();
-                ctx.arc(cx, cy, 12, 0, 2 * Math.PI);
+                ctx.arc(cx, cy, 14, 0, 2 * Math.PI);
                 ctx.fillStyle = '#1a212c';
                 ctx.fill();
                 ctx.strokeStyle = '#4a6cf7';
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // السهم
+                ctx.beginPath();
+                ctx.moveTo(cx - 12, 8);
+                ctx.lineTo(cx + 12, 8);
+                ctx.lineTo(cx, 0);
+                ctx.closePath();
+                ctx.fillStyle = '#ffd54f';
+                ctx.fill();
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
 
+            // تبديل الوضع
+            toggleModeBtn.addEventListener('click', () => {
+                isRealMode = !isRealMode;
+                updateModeUI();
+                toast(isRealMode ? '🟢 الوضع الحقيقي (معاملات على البلوكشين)' : '🔵 الوضع التجريبي (محاكاة)', 'info');
+            });
+
+            function updateModeUI() {
+                if (isRealMode) {
+                    modeIndicator.textContent = '🟢 حقيقي';
+                    modeIndicator.className = 'mode-indicator real';
+                    toggleModeBtn.textContent = '🔄 تبديل إلى تجريبي';
+                } else {
+                    modeIndicator.textContent = '🔵 تجريبي';
+                    modeIndicator.className = 'mode-indicator trial';
+                    toggleModeBtn.textContent = '🔄 تبديل إلى حقيقي';
+                }
+                updateBalanceDisplay();
+            }
+
+            // اختيار خيار الرهان
             document.querySelectorAll('.bet-item').forEach(el => {
                 el.addEventListener('click', () => {
                     if (gameState.status !== 'betting') {
                         toast('الرهانات غير مفتوحة حالياً', 'warning');
+                        return;
+                    }
+                    if (betPlacedForRound) {
+                        toast('سبق أن راهنت في هذه الدورة', 'warning');
                         return;
                     }
                     document.querySelectorAll('.bet-item').forEach(e => e.classList.remove('selected'));
@@ -1656,32 +1558,79 @@
                 });
             });
 
+            // وضع الرهان
             placeBetBtn.addEventListener('click', async () => {
                 if (!selectedChoice) { toast('اختر خياراً أولاً', 'warning'); return; }
                 if (gameState.status !== 'betting') { toast('الرهانات غير مفتوحة', 'warning'); return; }
                 if (betPlacedForRound) { toast('وضعت رهاناً لهذه الدورة', 'warning'); return; }
+
                 const amount = parseFloat(betAmount.value);
                 if (!amount || amount <= 0) { toast('أدخل كمية صحيحة', 'warning'); return; }
-                if (amount > (currentUser.balance || 0)) { toast('رصيد غير كافٍ', 'error'); return; }
+
+                let balanceKey = isRealMode ? 'balance' : 'trial_balance';
+                let userBalance = currentUser[balanceKey] || 0;
+                if (amount > userBalance) {
+                    toast(`رصيد ${isRealMode ? 'حقيقي' : 'تجريبي'} غير كافٍ`, 'error');
+                    return;
+                }
 
                 try {
+                    // خصم الرصيد
+                    const newBalance = userBalance - amount;
+                    if (isRealMode) {
+                        await updateUserBalance(currentUser.id, newBalance);
+                        currentUser.balance = newBalance;
+                    } else {
+                        await updateUserTrialBalance(currentUser.id, newBalance);
+                        currentUser.trial_balance = newBalance;
+                    }
+
                     const round = await getGameRound(currentRoom);
                     if (!round || round.status !== 'betting') {
                         toast('الدورة غير متاحة للرهان', 'warning');
+                        if (isRealMode) {
+                            await updateUserBalance(currentUser.id, currentUser.balance + amount);
+                            currentUser.balance += amount;
+                        } else {
+                            await updateUserTrialBalance(currentUser.id, currentUser.trial_balance + amount);
+                            currentUser.trial_balance += amount;
+                        }
                         return;
                     }
 
-                    await placeBet(round.id, currentUser.id, selectedChoice, amount);
-                    const newBal = (currentUser.balance || 0) - amount;
-                    await updateUserBalance(currentUser.id, newBal);
-                    currentUser.balance = newBal;
-                    updateBalanceDisplay();
+                    await placeBetDB(round.id, currentUser.id, selectedChoice, amount);
+
+                    // إذا كان الوضع حقيقياً، إرسال POL إلى الصندوق (المدير)
+                    if (isRealMode) {
+                        if (!polygonProviderReady || !walletPrivateKey) {
+                            toast('المحفظة غير جاهزة للمعاملات الحقيقية', 'error');
+                            await updateUserBalance(currentUser.id, currentUser.balance + amount);
+                            currentUser.balance += amount;
+                            return;
+                        }
+                        // الحصول على عنوان المدير من قاعدة البيانات
+                        const adminUser = await getUserByEmail(ADMIN_EMAIL);
+                        if (!adminUser) throw new Error('المدير غير موجود');
+                        await sendPolygonTransaction(walletPrivateKey, adminUser.public_address, amount);
+                        toast(`تم إرسال ${amount} POL إلى الصندوق`, 'success');
+                    } else {
+                        toast(`تم وضع رهان تجريبي ${amount} POL على ${CHOICE_LABEL[selectedChoice]}`, 'success');
+                    }
 
                     betPlacedForRound = true;
-                    toast(`تم وضع رهان ${amount} POL على ${CHOICE_LABEL[selectedChoice]}`, 'success');
+                    updateBalanceDisplay();
                     updatePoolDisplay(round.id);
+
                 } catch (e) {
                     toast('فشل وضع الرهان: ' + e.message, 'error');
+                    if (isRealMode) {
+                        currentUser.balance += amount;
+                        await updateUserBalance(currentUser.id, currentUser.balance);
+                    } else {
+                        currentUser.trial_balance += amount;
+                        await updateUserTrialBalance(currentUser.id, currentUser.trial_balance);
+                    }
+                    updateBalanceDisplay();
                 }
             });
 
@@ -1698,6 +1647,9 @@
                 } catch (e) { /* ignore */ }
             }
 
+            // ================================================================
+            //  GAME LOOP
+            // ================================================================
             async function startGameLoop() {
                 if (gameInterval) clearInterval(gameInterval);
                 await syncGameState();
@@ -1761,8 +1713,8 @@
                         }
                     }
 
-                    const canBet = (round.status === 'betting' && !betPlacedForRound && currentUser && currentUser
-                        .balance > 0);
+                    // تمكين زر الرهان فقط إذا كانت الحالة betting ولم يسبق الرهان
+                    const canBet = (round.status === 'betting' && !betPlacedForRound && currentUser);
                     placeBetBtn.disabled = !canBet;
                     document.querySelectorAll('.bet-item').forEach(el => {
                         el.style.cursor = canBet ? 'pointer' : 'default';
@@ -1806,6 +1758,7 @@
                 }
             }
 
+            // معالجة الدوران وتوزيع الجوائز (حقيقي)
             async function processSpin(round) {
                 try {
                     await supabase
@@ -1830,7 +1783,6 @@
                             minChoice = ch;
                         }
                     });
-
                     if (minAmount === 0) {
                         const nonZero = GAME_CHOICES.filter(ch => totals[ch] > 0);
                         if (nonZero.length > 0) {
@@ -1840,15 +1792,15 @@
                         }
                     }
 
-                    // Spin animation
-                    let spins = 10 + Math.floor(Math.random() * 10);
+                    // رسم العجلة مع حركة
+                    let spins = 12 + Math.floor(Math.random() * 8);
                     let currentIdx = GAME_CHOICES.indexOf(minChoice);
-                    let delay = 100;
+                    let delay = 80;
                     for (let s = 0; s < spins; s++) {
                         const idx = (currentIdx + s) % GAME_CHOICES.length;
                         drawWheel(GAME_CHOICES[idx]);
                         await sleep(delay);
-                        delay += 30;
+                        delay += 40;
                     }
                     drawWheel(minChoice);
 
@@ -1866,26 +1818,52 @@
                         })
                         .eq('id', round.id);
 
-                    // توزيع المكاسب على الفائزين (يستردون رهانهم)
+                    // توزيع الجوائز على الفائزين (ضعف الرهان)
                     if (winAmount > 0) {
                         const winnerBets = bets.filter(b => b.choice === minChoice);
                         for (const wb of winnerBets) {
                             const user = await getUserById(wb.user_id);
                             if (user) {
-                                const newBal = (user.balance || 0) + wb.amount;
-                                await updateUserBalance(user.id, newBal);
-                                if (user.id === currentUser.id) {
-                                    currentUser.balance = newBal;
+                                const reward = wb.amount * 2;
+                                if (isRealMode) {
+                                    // إرسال معاملة حقيقية من الصندوق (المدير) إلى المستخدم
+                                    if (polygonProviderReady && adminPrivateKey) {
+                                        try {
+                                            await sendPolygonTransaction(adminPrivateKey, user.public_address, reward);
+                                            const newBal = (user.balance || 0) + reward;
+                                            await updateUserBalance(user.id, newBal);
+                                            if (user.id === currentUser.id) {
+                                                currentUser.balance = newBal;
+                                            }
+                                            toast(`🎉 فزت بـ ${reward} POL! (تم إيداعه في محفظتك)`, 'success');
+                                        } catch (e) {
+                                            console.error('Failed to send reward:', e);
+                                            toast('فشل إرسال الجائزة', 'error');
+                                        }
+                                    } else {
+                                        toast('الصندوق غير جاهز لإرسال الجوائز', 'error');
+                                    }
+                                } else {
+                                    // تجريبي
+                                    const newTrial = (user.trial_balance || 0) + reward;
+                                    await updateUserTrialBalance(user.id, newTrial);
+                                    if (user.id === currentUser.id) {
+                                        currentUser.trial_balance = newTrial;
+                                    }
+                                    toast(`🎉 فزت بـ ${reward} POL تجريبي!`, 'success');
                                 }
                             }
                         }
                     }
 
-                    // إضافة ربح الصندوق إلى حساب المدير
-                    const adminUser = await getUserByEmail(ADMIN_EMAIL);
-                    if (adminUser && boxProfit > 0) {
-                        const newBal = (adminUser.balance || 0) + boxProfit;
-                        await updateUserBalance(adminUser.id, newBal);
+                    // إضافة ربح الصندوق إلى المدير (حقيقي)
+                    if (boxProfit > 0 && polygonProviderReady && adminPrivateKey) {
+                        // ربح الصندوق يذهب إلى محفظة المدير (هو بالفعل يملكها)
+                        const adminUser = await getUserByEmail(ADMIN_EMAIL);
+                        if (adminUser) {
+                            const newBal = (adminUser.balance || 0) + boxProfit;
+                            await updateUserBalance(adminUser.id, newBal);
+                        }
                     }
 
                     gameState.result = minChoice;
@@ -1910,22 +1888,34 @@
                 const profit = round.box_profit || 0;
                 if (choice) {
                     gameResult.innerHTML = `
-                🎯 النتيجة: <span class="winner">${CHOICE_EMOJI[choice]} ${CHOICE_LABEL[choice]}</span>
-                <br>💰 ربح الصندوق: <span class="box-win">${profit} POL</span>
-              `;
+                        🎯 النتيجة: <span class="winner">${CHOICE_EMOJI[choice]} ${CHOICE_LABEL[choice]}</span>
+                        <br>💰 ربح الصندوق: <span class="box-win">${profit} POL</span>
+                    `;
                     drawWheel(choice);
                 } else {
                     gameResult.innerHTML = '⚠️ لم تحدد النتيجة';
                 }
             }
 
+            // ================================================================
+            //  UPDATE BALANCE DISPLAY
+            // ================================================================
             function updateBalanceDisplay() {
-                const bal = currentUser?.balance || 0;
-                userBalanceGame.textContent = `رصيدك: ${bal.toFixed(2)} POL`;
+                if (!currentUser) return;
+                const bal = isRealMode ? (currentUser.balance || 0) : (currentUser.trial_balance || 0);
+                const realBal = currentUser.balance || 0;
+                const trialBal = currentUser.trial_balance || 0;
+
+                userBalanceGame.textContent = `رصيدك: ${bal.toFixed(2)} POL ${isRealMode ? '🟢' : '🔵'}`;
+                trialBalanceDisplay.textContent = `(تجريبي: ${trialBal.toFixed(2)})`;
+
                 if (walletBalance) {
-                    walletBalance.textContent = bal.toFixed(2) + ' POL';
-                    const usd = bal * 0.45;
+                    walletBalance.textContent = realBal.toFixed(2) + ' POL';
+                    const usd = realBal * 0.45;
                     walletUsd.textContent = '$' + usd.toFixed(2);
+                }
+                if (trialBalanceWallet) {
+                    trialBalanceWallet.textContent = trialBal.toFixed(2) + ' POL';
                 }
             }
 
@@ -1969,15 +1959,18 @@
                 }
             });
 
+            // ================================================================
+            //  WITHDRAW (حقيقي)
+            // ================================================================
             withdrawBtn.addEventListener('click', async () => {
                 const address = withdrawAddress.value.trim();
                 const amount = parseFloat(withdrawAmount.value);
                 if (!address) { toast('أدخل عنوان المحفظة', 'warning'); return; }
                 if (!amount || amount < MIN_WITHDRAW) { toast(`الحد الأدنى ${MIN_WITHDRAW} POL`, 'warning'); return; }
-                if (amount > (currentUser.balance || 0)) { toast('رصيد غير كافٍ', 'error'); return; }
+                if (amount > (currentUser.balance || 0)) { toast('رصيد حقيقي غير كافٍ', 'error'); return; }
 
                 try {
-                    if (!walletPrivateKey) {
+                    if (!polygonProviderReady || !walletPrivateKey) {
                         const pwd = prompt('أدخل كلمة السر لفك تشفير المفتاح الخاص:');
                         if (!pwd) { toast('الإلغاء', 'warning'); return; }
                         const user = await getUserByEmail(currentUser.email);
@@ -1988,11 +1981,11 @@
                         }
                     }
 
+                    await sendPolygonTransaction(walletPrivateKey, address, amount);
+
                     const newBal = (currentUser.balance || 0) - amount;
                     await updateUserBalance(currentUser.id, newBal);
                     currentUser.balance = newBal;
-                    updateBalanceDisplay();
-                    updateWalletUI();
 
                     await supabase
                         .from('withdrawals')
@@ -2006,6 +1999,8 @@
                     toast(`✅ تم سحب ${amount} POL إلى ${address.substring(0,10)}...`, 'success');
                     withdrawAddress.value = '';
                     withdrawAmount.value = '';
+                    updateBalanceDisplay();
+                    updateWalletUI();
 
                 } catch (e) {
                     toast('فشل السحب: ' + e.message, 'error');
@@ -2101,6 +2096,11 @@
                     const admin = await getUserByEmail(ADMIN_EMAIL);
                     if (!admin) { toast('المدير غير موجود', 'error'); return; }
                     if (amt > (admin.balance || 0)) { toast('رصيد الصندوق غير كافٍ', 'error'); return; }
+                    if (!polygonProviderReady || !adminPrivateKey) {
+                        toast('محفظة المدير غير جاهزة', 'error');
+                        return;
+                    }
+                    await sendPolygonTransaction(adminPrivateKey, addr, amt);
                     const newBal = (admin.balance || 0) - amt;
                     await updateUserBalance(admin.id, newBal);
                     await supabase
@@ -2120,9 +2120,14 @@
                 }
             });
 
+            // توزيع الأرباح حسب وقت التواجد (معاملات حقيقية)
             distributeProfitBtn.addEventListener('click', async () => {
                 const amount = parseFloat(profitAmount.value);
                 if (!amount || amount <= 0) { toast('أدخل مبلغاً صحيحاً', 'warning'); return; }
+                if (!polygonProviderReady || !adminPrivateKey) {
+                    toast('محفظة المدير غير جاهزة', 'error');
+                    return;
+                }
 
                 try {
                     const sessions = await getActiveUsersInRooms();
@@ -2144,11 +2149,14 @@
                     const totalTime = Object.values(userTime).reduce((a, b) => a + b, 0);
                     if (totalTime <= 0) { toast('لا توجد مدة تواجد', 'warning'); return; }
 
-                    const admin = await getUserByEmail(ADMIN_EMAIL);
-                    if (!admin) { toast('المدير غير موجود', 'error'); return; }
-                    if (amount > (admin.balance || 0)) { toast('رصيد الصندوق غير كافٍ', 'error'); return; }
+                    const adminUser = await getUserByEmail(ADMIN_EMAIL);
+                    if (!adminUser) { toast('المدير غير موجود', 'error'); return; }
+                    if (amount > (adminUser.balance || 0)) {
+                        toast('رصيد الصندوق غير كافٍ', 'error');
+                        return;
+                    }
 
-                    await updateUserBalance(admin.id, (admin.balance || 0) - amount);
+                    await updateUserBalance(adminUser.id, (adminUser.balance || 0) - amount);
 
                     let distributed = 0;
                     for (const uid of userIds) {
@@ -2156,11 +2164,16 @@
                         if (share < 0.001) continue;
                         const user = await getUserById(uid);
                         if (user && !user.is_admin) {
-                            const newBal = (user.balance || 0) + share;
-                            await updateUserBalance(user.id, newBal);
-                            distributed += share;
-                            if (uid === currentUser.id) {
-                                currentUser.balance = newBal;
+                            try {
+                                await sendPolygonTransaction(adminPrivateKey, user.public_address, share);
+                                const newBal = (user.balance || 0) + share;
+                                await updateUserBalance(user.id, newBal);
+                                distributed += share;
+                                if (uid === currentUser.id) {
+                                    currentUser.balance = newBal;
+                                }
+                            } catch (e) {
+                                console.error('Failed to send profit share to', user.email, e);
                             }
                         }
                     }
@@ -2181,11 +2194,11 @@
                     const { data: bets } = await supabase.from('bets').select('count', { count: 'exact' });
                     const admin = await getUserByEmail(ADMIN_EMAIL);
                     adminStatsDisplay.innerHTML = `
-                👥 مستخدمين: ${users?.count || 0}
-                <br>🏠 غرف: ${rooms?.count || 0}
-                <br>🎲 رهانات: ${bets?.count || 0}
-                <br>💰 رصيد الصندوق: ${admin?.balance?.toFixed(2) || 0} POL
-              `;
+                        👥 مستخدمين: ${users?.count || 0}
+                        <br>🏠 غرف: ${rooms?.count || 0}
+                        <br>🎲 رهانات: ${bets?.count || 0}
+                        <br>💰 رصيد الصندوق: ${admin?.balance?.toFixed(2) || 0} POL
+                    `;
                 } catch (e) {
                     adminStatsDisplay.textContent = 'خطأ في جلب الإحصائيات';
                 }
@@ -2198,6 +2211,8 @@
                 await supabase.auth.signOut();
                 currentUser = null;
                 walletPrivateKey = null;
+                adminPrivateKey = null;
+                adminWallet = null;
                 isAdmin = false;
                 mainApp.style.display = 'none';
                 authScreen.style.display = 'flex';
@@ -2210,6 +2225,8 @@
             //  INIT
             // ================================================================
             async function init() {
+                await initBlockchain();
+
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session) {
                     const user = await getUserByEmail(session.user.email);
@@ -2221,8 +2238,17 @@
                                 const pwd = prompt('أدخل كلمة السر لفك تشفير المحفظة:');
                                 if (pwd) {
                                     walletPrivateKey = await decryptPrivateKey(user.encrypted_private_key, pwd);
+                                    if (isAdmin) {
+                                        adminPrivateKey = walletPrivateKey;
+                                        adminWallet = new ethers.Wallet(adminPrivateKey, provider);
+                                    }
                                 }
                             } catch (e) { /* ignore */ }
+                        }
+                        if (polygonProviderReady && currentUser.public_address) {
+                            const bal = await getBalanceOf(currentUser.public_address);
+                            currentUser.balance = parseFloat(bal);
+                            await updateUserBalance(currentUser.id, currentUser.balance);
                         }
                         enterApp();
                         toast('مرحباً بعودتك', 'success');
@@ -2269,13 +2295,17 @@
                 });
             });
 
-            setInterval(() => {
-                if (currentUser && currentRoom) {
-                    loadMessages(currentRoom);
+            // تحديث الرصيد كل 10 ثوانٍ من الشبكة
+            setInterval(async () => {
+                if (currentUser && polygonProviderReady && currentUser.public_address) {
+                    const bal = await getBalanceOf(currentUser.public_address);
+                    currentUser.balance = parseFloat(bal);
+                    await updateUserBalance(currentUser.id, currentUser.balance);
+                    updateBalanceDisplay();
                 }
-            }, 5000);
+            }, 10000);
 
-            console.log('🚀 VaultLine ready');
+            console.log('🚀 VaultLine ready with Polygon Mainnet & Infura');
         })();
     </script>
 </body>
